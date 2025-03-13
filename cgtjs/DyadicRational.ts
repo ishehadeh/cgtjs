@@ -1,4 +1,5 @@
 import { expectBigInt } from './utils/typecheck';
+import { compareBigInt } from './utils/compare';
 
 export class DyadicRational {
     /** the "m" in m/(2^n)
@@ -163,11 +164,8 @@ export class DyadicRational {
     }
 
     /** Add rhs to this rational, return a reference to self.
-     * 
-     * @param {DyadicRational} rhs
-     * @returns {DyadicRational}
      */
-    add(rhs) {
+    add(rhs: DyadicRational): DyadicRational {
         // make sure we match denominators
         let compatRhs = DyadicRational.from(rhs);
         if (compatRhs.denominatorExp < this.denominatorExp) {
@@ -184,11 +182,8 @@ export class DyadicRational {
 
 
     /** subtract rhs to this rational, return a reference to self.
-     * 
-     * @param {DyadicRational} rhs
-     * @returns {DyadicRational}
      */
-    sub(rhs) {
+    sub(rhs: DyadicRational): DyadicRational {
         const rhsRat = DyadicRational.from(rhs);
         rhsRat.neg();
         this.add(rhsRat);
