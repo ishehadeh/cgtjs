@@ -144,18 +144,23 @@ export class BitBoard {
         return tr;
     }
 
-    *iterSet(): Generator<bigint, void> {
+    /**
+     * Iterate the cells that are "true" (have a '1' value in the bitboard)
+     * 
+     * @returns a generator that yields the x and y coordinates of the cells that are "true", in the form [x, y]
+     */
+    *iterSet(): Generator<[bigint, bigint], void> {
         for (let i = 0n; i < this.width * this.height; ++i) {
             if ((this.#bits & (1n << i)) > 0n) {
-                yield i;
+                yield [i % this.width, i / this.width];
             }
         }
     }
 
-    *iterClear(): Generator<bigint, void> {
+    *iterClear(): Generator<[bigint, bigint], void> {
         for (let i = 0n; i < this.width * this.height; ++i) {
             if ((this.#bits & (1n << i)) == 0n) {
-                yield i;
+                yield [i % this.width, i / this.width];
             }
         }
     }
