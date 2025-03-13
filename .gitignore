@@ -1,3 +1,7 @@
 # Editor Configs
 
 .vscode/
+
+# Dependency Stores
+
+node_modules/
