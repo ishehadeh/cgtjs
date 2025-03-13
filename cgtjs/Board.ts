@@ -1,5 +1,3 @@
-import type { Blokus } from "./game/Blokus";
-
 export class BitBoard {
     #bits: bigint;
     #width: bigint;
