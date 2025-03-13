@@ -1,6 +1,6 @@
 import { expectBigInt } from './utils/typecheck';
 
-class DyadicRational {
+export class DyadicRational {
     /** the "m" in m/(2^n)
      */
     #numerator: bigint;
