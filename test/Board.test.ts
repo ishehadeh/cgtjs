@@ -89,6 +89,21 @@ test('transpose - 4x4 BitBoard', function () {
     expect(board.bits).toBe(0b1001_0100_0100_1101n);
 });
 
+test('transpose - 4x3 BitBoard (bottom row empty)', function () {
+    const board = new BitBoard(4n, 3n, 0b0100_0101_0010n);
+    expect(board.bits).toBe(0b0100_0101_0010n);
+
+    expect(board.transpose().bits).toBe(0b000_110_001_010n);
+});
+
+test('transpose - 4x3 BitBoard (bottom row non-empty)', function () {
+    const board = new BitBoard(4n, 3n, 0b1100_0101_1010n);
+    expect(board.bits).toBe(0b1100_0101_1010n);
+
+    expect(board.transpose().bits).toBe(0b101_110_001_010n);
+});
+
+
 test('rotate clockwise - 2x2 BitBoard', function () {
     const board = new BitBoard(2n, 2n, 0b10_01n);
     expect(board.bits).toBe(0b10_01n);
@@ -103,6 +118,15 @@ test('rotate clockwise - 3x3 BitBoard', function () {
 
     expect(board.rotateClockwise().bits).toBe(0b000_011_100n);
 });
+
+
+test('rotate clockwise - 4x3 BitBoard', function () {
+    const board = new BitBoard(4n, 3n, 0b0100_0101_0010n);
+    expect(board.bits).toBe(0b0100_0101_0010n);
+
+    expect(board.rotateClockwise().bits).toBe(0b000_011_100_010n);
+});
+
 
 
 test('resize - 1x1 to 3x3', function () {
