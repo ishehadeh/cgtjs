@@ -1,5 +1,5 @@
-import { expectBigInt } from './utils/typecheck';
-import { compareBigInt } from './utils/compare';
+import { expectBigInt } from './utils/typecheck.ts';
+import { compareBigInt } from './utils/compare.ts';
 
 export class DyadicRational {
     /** the "m" in m/(2^n)

@@ -1,4 +1,4 @@
-import { BitBoard } from "../Board";
+import { BitBoard } from "../Board.ts";
 
 export enum TileState {
     Interior = 'interior',
@@ -225,6 +225,7 @@ export class Blokus {
 
             // Try all 4 rotations
             for (let rotation = 0; rotation < 4; rotation++) {
+                // TODO: also check reflections
                 if (rotation > 0) {
                     currentPoly = currentPoly.rotateClockwise();
                 }
