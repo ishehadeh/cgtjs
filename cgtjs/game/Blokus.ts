@@ -139,6 +139,32 @@ export class Blokus {
         }
     }
 
+    clone(): Blokus {
+        return new Blokus(
+            this.#side.clone(),
+            this.#corner.clone(),
+            this.#interior.clone(),
+        );
+    }
+
+    /**
+     * Get a string representation of the object.
+     */
+    toString(): string {
+        return `Blokus(${this.width}, ${this.height}, ${this.#side.bits}, ${this.#corner.bits}, ${this.#interior.bits})`;
+    }
+
+    countInterior(): bigint {
+        let bits = this.#interior.bits;
+        let count = 0n;
+        while (bits > 0n) {
+            count += bits & 1n;
+            bits >>= 1n;
+        }
+
+        return count;
+    }
+
     resize(w: bigint, h: bigint): Blokus {
         return new Blokus(
             this.#side.resize(w, h),
@@ -170,6 +196,9 @@ export class Blokus {
     tryPlacePolyomino(x: bigint, y: bigint, polyomino: Blokus, polyX: bigint, polyY: bigint): boolean {
         const trPolyomino = polyomino.resize(this.#corner.width, this.#corner.height);
         trPolyomino.translateInPlace(x - polyX, y - polyY);
+        if (trPolyomino.countInterior() != polyomino.countInterior()) {
+            return false;
+        }
 
         // interior pieces cannot be placed onto side or interior pieces.
         if ((this.#interior.bits & (trPolyomino.#interior.bits | trPolyomino.#side.bits)) != 0n) {
@@ -184,4 +213,36 @@ export class Blokus {
         this.#side.bits &= ~(trPolyomino.#interior.bits);
         return true;
     }
+
+    /**
+     * enumerate all possible moves for a given set of polyominos.
+     * 
+     * @param polyominos 
+     */
+    *moves(polyominos: Blokus[]): Generator<Blokus, void, void> {
+        for (const polyomino of polyominos) {
+            let currentPoly = polyomino;
+
+            // Try all 4 rotations
+            for (let rotation = 0; rotation < 4; rotation++) {
+                if (rotation > 0) {
+                    currentPoly = currentPoly.rotateClockwise();
+                }
+
+                // For each corner in the board
+                for (const [boardX, boardY] of this.#corner.iterSet()) {
+                    // For each corner in the polyomino
+                    for (const [polyX, polyY] of currentPoly.#corner.iterSet()) {
+                        // Create a copy of the board to test the move
+                        const newBoard = this.clone();
+                        // Try to place the polyomino
+                        if (newBoard.tryPlacePolyomino(boardX, boardY, currentPoly, polyX + 1n, polyY + 1n)) {
+                            yield newBoard;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 }

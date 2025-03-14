@@ -66,6 +66,23 @@ test('horizontal flip - 4x4 BitBoard', function () {
     expect(board.bits).toBe(0b1001_0100_0100_1101n);
 });
 
+test('horizontal flip - 4x3 BitBoard, symmetric', function () {
+    const board = new BitBoard(4n, 3n, 0b1001_0000_1001n);
+    expect(board.bits).toBe(0b1001_0000_1001n);
+    
+    board.flipHorizontalInPlace();
+    expect(board.bits).toBe(0b1001_0000_1001n);
+});
+
+test('horizontal flip - 3x4 BitBoard, symmetric', function () {
+    const board = new BitBoard(3n, 4n, 0b101_000_000_101n);
+    expect(board.bits).toBe(0b101_000_000_101n);
+    
+    board.flipHorizontalInPlace();
+    expect(board.bits).toBe(0b101_000_000_101n);
+});
+
+
 test('transpose - 2x2 BitBoard', function () {
     const board = new BitBoard(2n, 2n, 0b10_01n);
     expect(board.bits).toBe(0b10_01n);
@@ -125,6 +142,27 @@ test('rotate clockwise - 4x3 BitBoard', function () {
     expect(board.bits).toBe(0b0100_0101_0010n);
 
     expect(board.rotateClockwise().bits).toBe(0b000_011_100_010n);
+});
+
+test('rotate clockwise - 3x3 BitBoard, symmetric', function () {
+    const board = new BitBoard(3n, 3n, 0b101_000_101n);
+    expect(board.bits).toBe(0b101_000_101n);
+
+    expect(board.rotateClockwise().bits).toBe(0b101_000_101n);
+});
+
+test('transpose - 3x4 BitBoard, symmetric', function () {
+    const board = new BitBoard(4n, 3n, 0b1001_0000_1001n);
+    expect(board.bits).toBe(0b1001_0000_1001n);
+
+    expect(board.transpose().bits).toBe(0b101_000_000_101n);
+});
+
+test('rotate clockwise - 3x4 BitBoard, symmetric', function () {
+    const board = new BitBoard(4n, 3n, 0b1001_0000_1001n);
+    expect(board.bits).toBe(0b1001_0000_1001n);
+
+    expect(board.rotateClockwise().bits).toBe(0b101_000_000_101n);
 });
 
 

@@ -34,12 +34,14 @@ export class BitBoard {
         this.#width = w;
         this.#height = h;
         this.#bits = BigInt.asUintN(Number(w * h), bits);
+        this.#maskCol = BigInt.asUintN(Number(w * h), 0n)
+        this.#maskRow = BigInt.asUintN(Number(w * h), 0n)
 
         for (let i = 0n; i < this.width; ++i) {
             this.#maskRow |= (1n << i);
         }
 
-        for (let i = 0n; i < this.width; ++i) {
+        for (let i = 0n; i < this.height; ++i) {
             this.#maskCol |= (1n << (i * this.width));
         }
     }
@@ -59,6 +61,10 @@ export class BitBoard {
         }
 
         return newBoard;
+    }
+
+    clone(): BitBoard {
+        return new BitBoard(this.width, this.height, this.bits);
     }
 
     translateInPlace(x: bigint, y: bigint) {
@@ -131,11 +137,22 @@ export class BitBoard {
         let newBits = BigInt.asUintN(Number(this.width * this.height), 0n);
         for (let i = 0n; i < (this.width + 1n) / 2n; ++i) {
             const colLeftOffset = i;
-            const colRightOffset = this.width - i - 1n;
+            const colRightOffset = (this.width - i) - 1n;
             newBits |= (this.maskCol & (this.#bits >> colLeftOffset)) << colRightOffset;
             newBits |= (this.maskCol & (this.#bits >> colRightOffset)) << colLeftOffset;
         }
         this.#bits = newBits;
+    }
+
+    toString(): string {
+        let str = "";
+        for (let y = 0n; y < this.height; ++y) {
+            for (let x = 0n; x < this.width; ++x) {
+                str += this.get(x, y) ? "1" : "0";
+            }
+            str += "\n";
+        }
+        return str;
     }
 
     rotateClockwise(): BitBoard {
