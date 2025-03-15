@@ -3,7 +3,8 @@
   "module": "cgtjs/index.ts",
   "type": "module",
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "fast-check": "^4.0.0"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"

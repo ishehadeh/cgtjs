@@ -92,14 +92,13 @@ export class DyadicRational {
         return compareBigInt(compatLhs.numerator, compatRhs.numerator);
     }
 
-    #increaseDenom(denomExp: number | bigint) {
-        const denomExpBig = expectBigInt(denomExp);
-        if (this.#denominatorExp > denomExpBig) {
-            throw new Error(`denomator must be increased! new dominator is '${denomExpBig}', but value is ${this}`)
+    #increaseDenom(denomExp: bigint) {
+        if (this.#denominatorExp > denomExp) {
+            throw new Error(`denomator must be increased! new dominator is '${denomExp}', but value is ${this}`)
         }
-        const diff = denomExpBig - this.denominatorExp;
+        const diff = denomExp - this.denominatorExp;
         this.#numerator *= (2n ** diff);
-        this.#denominatorExp = denomExpBig;
+        this.#denominatorExp = denomExp;
     }
 
     /** Simplify the fraction, this operation should be run after construction, or any arithmetic.
@@ -123,9 +122,8 @@ export class DyadicRational {
     }
 
     /** Get the right options
-     * @return {DyadicRational | null}
      */
-    right() {
+    right(): DyadicRational | null {
         // 2 cases here
         //  1. This is a whole number, so N = {|N + 1} or N = {N - 1|}, or N = 0
         if (this.denominatorExp === 0n) {
@@ -167,15 +165,15 @@ export class DyadicRational {
      */
     add(rhs: DyadicRational): DyadicRational {
         // make sure we match denominators
-        let compatRhs = DyadicRational.from(rhs);
-        if (compatRhs.denominatorExp < this.denominatorExp) {
-            compatRhs = compatRhs.clone();
-            compatRhs.#increaseDenom(this.denominatorExp);
-        } else if (compatRhs.denominatorExp > this.denominatorExp) {
-            this.#increaseDenom(compatRhs.denominatorExp);
+        if (rhs.denominatorExp < this.denominatorExp) {
+            rhs = rhs.clone();
+            rhs.#increaseDenom(this.denominatorExp);
+        } else if (rhs.denominatorExp > this.denominatorExp) {
+            this.#increaseDenom(rhs.denominatorExp);
         }
 
-        this.#numerator += compatRhs.numerator
+        console.log(this.toString());
+        this.#numerator += rhs.numerator
         this.normalize();
         return this;
     }
