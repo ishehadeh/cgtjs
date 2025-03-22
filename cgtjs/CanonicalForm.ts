@@ -1,6 +1,6 @@
-import type { DyadicRational } from "./DyadicRational";
-import type { Ordering } from "./utils/compare";
-import { PartialOrder } from "./utils/PartialOrder";
+import type { DyadicRational } from "./DyadicRational.ts";
+import type { Ordering } from "./utils/compare.ts";
+import { PartialOrder } from "./utils/PartialOrder.ts";
 
 export class CanonicalForm extends PartialOrder {
     get leftMoves(): CanonicalForm[] { throw new Error("Not Implemented"); }
@@ -27,7 +27,7 @@ export class CanonicalForm extends PartialOrder {
         let isLt = false;
         // Check: "no option Hᴸ such that Hᴸ ≥ G"
         for (const hL of rhsL) {
-            if (hL.partialCompare(this) ?? NaN >= 0) {
+            if ((hL.partialCompare(this) ?? NaN) >= 0) {
                 isLt = true;
                 break;
             }
@@ -36,7 +36,7 @@ export class CanonicalForm extends PartialOrder {
         if (!isLt) {
             // Check: " no option Gᴿ such that Gᴿ ≤ H"
             for (const gR of lhsR) {
-                if (gR.partialCompare(rhs) ?? NaN <= 0) {
+                if ((gR.partialCompare(rhs) ?? NaN) <= 0) {
                     isLt = true;
                     break;
                 }
@@ -48,7 +48,7 @@ export class CanonicalForm extends PartialOrder {
 
         // Check: "no option Gᴸ such that Gᴸ ≥ H"
         for (const gL of lhsL) {
-            if (gL.partialCompare(rhs) ?? NaN >= 0) {
+            if ((gL.partialCompare(rhs) ?? NaN) >= 0) {
                 isGt = true;
                 break;
             }
@@ -57,7 +57,7 @@ export class CanonicalForm extends PartialOrder {
         if (!isGt) {
             // Check: " no option Hᴿ such that Hᴿ ≤ G"
             for (const hR of rhsR) {
-                if (hR.partialCompare(this) ?? NaN <= 0) {
+                if ((hR.partialCompare(this) ?? NaN) <= 0) {
                     isGt = true;
                     break;
                 }
