@@ -1,6 +1,6 @@
-import { CanonicalForm } from "./CanonicalForm";
-import { DyadicRational } from "./DyadicRational";
-import { NumberUpStar } from './NumberUpStar';
+import { CanonicalForm } from "./CanonicalForm.ts";
+import { DyadicRational } from "./DyadicRational.ts";
+import { NumberUpStar } from './NumberUpStar.ts';
 
 
 
@@ -15,6 +15,29 @@ function powerOfTwoLess(n: bigint): bigint {
     }
     bit /= 2n;
     return bit;
+}
+
+
+export function canonicalForm(left: (NumberUpStar | MoveSet)[], right: (NumberUpStar | MoveSet)[]) {
+    const canonLeft = [];
+    const canonRight = [];
+    for (const l of left) {
+        if (l instanceof MoveSet) {
+            canonLeft.push(l.normalize());
+        } else {
+            canonLeft.push(NumberUpStar.coerce(l))
+        }
+    }
+
+    for (const r of right) {
+        if (r instanceof MoveSet) {
+            canonRight.push(r.normalize());
+        } else {
+            canonRight.push(NumberUpStar.coerce(r))
+        }
+    }
+
+    return (new MoveSet(canonLeft, canonRight)).normalize();
 }
 
 /** A list of left and right player moves
@@ -402,26 +425,4 @@ export class MoveSet extends CanonicalForm {
             return result;
         }
     }
-}
-
-function canonicalForm(left: (NumberUpStar | MoveSet)[], right: (NumberUpStar | MoveSet)[]) {
-    const canonLeft = [];
-    const canonRight = [];
-    for (const l of left) {
-        if (l instanceof MoveSet) {
-            canonLeft.push(l.normalize());
-        } else {
-            canonLeft.push(NumberUpStar.coerce(l))
-        }
-    }
-
-    for (const r of right) {
-        if (r instanceof MoveSet) {
-            canonRight.push(r.normalize());
-        } else {
-            canonRight.push(NumberUpStar.coerce(r))
-        }
-    }
-
-    return (new MoveSet(canonLeft, canonRight)).normalize();
 }
