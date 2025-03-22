@@ -10,7 +10,7 @@ export class Order extends PartialOrder {
         throw Error("Not Implement: Order.compare");
     }
 
-    partialCompare(rhs: Order): Ordering {
+    partialCompare(rhs: unknown): Ordering | null {
         return this.compare(rhs)
     }
 }
