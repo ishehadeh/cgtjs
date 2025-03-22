@@ -1,8 +1,8 @@
-import { CanonicalForm } from "./CanonicalForm";
-import { DyadicRational } from "./DyadicRational";
-import { MoveSet } from "./MoveSet";
-import { compareBigInt, type Ordering } from "./utils/compare";
-import { expectBigInt } from "./utils/typecheck";
+import { CanonicalForm } from "./CanonicalForm.ts";
+import { DyadicRational } from "./DyadicRational.ts";
+import { MoveSet } from "./MoveSet.ts";
+import { compareBigInt, type Ordering } from "./utils/compare.ts";
+import { expectBigInt } from "./utils/typecheck.ts";
 
 function absBigInt(n: bigint): bigint {
     return n < 0n ? -n : n;
