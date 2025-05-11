@@ -3,6 +3,8 @@
   "module": "cgtjs/index.ts",
   "type": "module",
   "devDependencies": {
+    "@swc/cli": "^0.7.5",
+    "@swc/core": "^1.11.24",
     "@types/bun": "latest",
     "fast-check": "^4.0.0"
   },

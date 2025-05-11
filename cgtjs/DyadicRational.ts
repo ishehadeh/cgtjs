@@ -172,7 +172,6 @@ export class DyadicRational {
             this.#increaseDenom(rhs.denominatorExp);
         }
 
-        console.log(this.toString());
         this.#numerator += rhs.numerator
         this.normalize();
         return this;

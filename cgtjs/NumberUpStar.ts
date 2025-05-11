@@ -32,6 +32,10 @@ export class NumberUpStar extends CanonicalForm {
         return [...this.generateRightOptions()]
     }
 
+    isZero(): boolean {
+        return this.number.isZero() && this.up == 0n && this.star == 0n;
+    }
+
     constructor(number: DyadicRational | bigint = 0n, up = 0n, star = 0n) {
         super();
 

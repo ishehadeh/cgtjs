@@ -193,24 +193,51 @@ export class Blokus {
         console.assert((this.#side.bits & this.#interior.bits) === 0n);
     }
 
-    tryPlacePolyomino(x: bigint, y: bigint, polyomino: Blokus, polyX: bigint, polyY: bigint): boolean {
-        const trPolyomino = polyomino.resize(this.#corner.width, this.#corner.height);
-        trPolyomino.translateInPlace(x - polyX, y - polyY);
-        if (trPolyomino.countInterior() != polyomino.countInterior()) {
-            return false;
+    tryPlacePolyomino(boardX: bigint, boardY: bigint, polyomino: Blokus, polyX: bigint, polyY: bigint): boolean {
+        const changes: [bigint, bigint, TileState][] = [];
+        for (let x = 0n; x < polyomino.width; ++x) {
+            for (let y = 0n; y < polyomino.height; ++y) {
+                const tileX = x + boardX - polyX;
+                const tileY = y + boardY - polyY;
+                const isOutOfBounds = (tileX < 0 || tileY < 0 || tileX >= this.width || tileY >= this.height);
+
+                const polyTile = polyomino.get(x, y);
+                const boardTile = this.get(tileX, tileY);
+                // tried to place an polyomino tile out of bounds
+                if (isOutOfBounds) {
+                    if (polyTile === TileState.Interior) {
+                        return false;
+                    } else {
+                        continue;
+                    }
+                } 
+
+                if (polyTile === TileState.Interior) {
+                    if (boardTile === TileState.Side || boardTile === TileState.Interior) {
+                        return false;
+                    } else {
+                        changes.push([tileX, tileY, polyTile]);
+                    }
+                } else if (polyTile === TileState.Corner) {
+                    // corner only overrides empty, but it can be placed on something
+                    if (boardTile === TileState.Empty) {
+                        changes.push([tileX, tileY, polyTile]);
+                    }
+                } else if (polyTile === TileState.Empty) {
+                    // nothing to do
+                } else if (polyTile === TileState.Side) {
+                    if (boardTile === TileState.Interior) {
+                        return false;
+                    } else {
+                        changes.push([tileX, tileY, polyTile]);
+                    }
+                }
+            }
+        }
+        for (const [x, y, state] of changes) {
+            this.set(x, y, state);
         }
 
-        // interior pieces cannot be placed onto side or interior pieces.
-        if ((this.#interior.bits & (trPolyomino.#interior.bits | trPolyomino.#side.bits)) != 0n) {
-            return false;
-        }
-
-
-        this.#interior.bits |= trPolyomino.#interior.bits;
-        this.#side.bits |= (trPolyomino.#side.bits & ~this.#interior.bits);
-        this.#corner.bits |= (trPolyomino.#corner.bits & ~(this.#interior.bits | this.#side.bits));
-        this.#corner.bits &= ~(trPolyomino.#interior.bits | trPolyomino.#side.bits);
-        this.#side.bits &= ~(trPolyomino.#interior.bits);
         return true;
     }
 

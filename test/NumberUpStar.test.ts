@@ -26,3 +26,7 @@ test("NumberUpStar compares up with rational move set", () => {
     expect(new NumberUpStar(new DyadicRational(2)).partialCompare(b)).toBe(-1);
     expect(new NumberUpStar(new DyadicRational(2)).partialCompare(new NumberUpStar(new DyadicRational(11, 2)))).toBe(-1);
 })
+
+test("[*] => 0", () => {
+    expect(canonicalForm([new NumberUpStar(0n, 0n, 1n)], [new NumberUpStar(0n, 0n, 1n)]).partialCompare(new NumberUpStar(0n))).toBe(0);
+})

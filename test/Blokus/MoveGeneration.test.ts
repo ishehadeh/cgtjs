@@ -58,3 +58,14 @@ test('blokus generates correct moves for domino 4x4', () => {
          ....`).toString(),
     ]);
 });
+
+test('blokus generates correct moves for domino 3x1', () => {
+    const game = Blokus.fromString(
+        `c..`
+    );
+    const moves = uniqueBy([...game.moves([DOMINO])], move => move.toString());
+    expect(moves.length).toBe(1);
+    expect(moves.map(m => m.toStringBoard())).toEqual([
+        Blokus.fromString(`iis`).toStringBoard()
+    ]);
+});

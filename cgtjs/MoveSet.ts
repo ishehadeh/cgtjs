@@ -335,10 +335,10 @@ export class MoveSet extends CanonicalForm {
             let [l] = this.left;
             let [r] = this.right;
             if (l instanceof NumberUpStar && r instanceof NumberUpStar) {
-                if (l.number.isZero() && (r.up > 0n || r.star > 0n)) {
+                if (l.isZero() && (r.up > 0n || r.star > 0n)) {
                     return new NumberUpStar(r.number, r.up + 1n, r.star ^ 1n)
                 }
-                if (r.number.isZero() && (l.up < 0n || r.star > 0n)) {
+                if (r.isZero() && (l.up < 0n || r.star > 0n)) {
                     return new NumberUpStar(r.number, r.up - 1n, r.star ^ 1n)
                 }
             }
