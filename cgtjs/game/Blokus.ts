@@ -109,6 +109,13 @@ export class Blokus {
         return TileState.Empty;
     }
 
+    getByIndex(i: bigint): TileState {
+        if (this.#side.getByIndex(i)) return TileState.Side;
+        if (this.#corner.getByIndex(i)) return TileState.Corner;
+        if (this.#interior.getByIndex(i)) return TileState.Interior;
+        return TileState.Empty;
+    }
+
     set(x: bigint, y: bigint, state: TileState) {
         switch (state) {
             case TileState.Interior:

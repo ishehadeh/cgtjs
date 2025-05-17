@@ -101,6 +101,10 @@ export class BitBoard {
         return (this.#bits & (1n << (y * this.width + x))) > 0;
     }
 
+    getByIndex(i: bigint): boolean {
+        return (this.#bits & (1n << i)) > 0;
+    }
+
     set(x: bigint, y: bigint) {
         this.#bits |= 1n << (y * this.width + x);
     }
