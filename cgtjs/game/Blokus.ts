@@ -161,6 +161,28 @@ export class Blokus {
         return `Blokus(${this.width}, ${this.height}, ${this.#side.bits}, ${this.#corner.bits}, ${this.#interior.bits})`;
     }
 
+    serializeAscii(): string {
+        return `${this.width}x${this.height}.${this.#side.bits}.${this.#corner.bits}.${this.#interior.bits}`;
+    }
+    
+    static deserializeAscii(board: string): Blokus {
+        const match = board.match(/(\d+)x(\d+)\.(\d+)\.(\d+)\.(\d+)/);
+        if (match === null) {
+            throw new Error('invalid serialization');
+        }
+        const [_, wString, hString, sideString, cornerString, interiorString ] = match;
+        const w = BigInt(wString);
+        const h = BigInt(hString);
+        const side = BigInt(sideString);
+        const corner = BigInt(cornerString);
+        const interior = BigInt(interiorString);
+        return new Blokus(
+            new BitBoard(w, h, side),
+            new BitBoard(w, h, corner),
+            new BitBoard(w, h, interior),
+        );
+    }
+
     countInterior(): bigint {
         let bits = this.#interior.bits;
         let count = 0n;
