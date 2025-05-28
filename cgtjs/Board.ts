@@ -148,6 +148,18 @@ export class BitBoard {
         this.#bits = newBits;
     }
 
+    flipHorizontal(): BitBoard {
+        const clone = this.clone();
+        clone.flipHorizontalInPlace();
+        return clone;
+    }
+
+    flipVertical(): BitBoard {
+        const clone = this.clone();
+        clone.flipVerticalInPlace();
+        return clone;
+    }
+
     toString(): string {
         let str = "";
         for (let y = 0n; y < this.height; ++y) {

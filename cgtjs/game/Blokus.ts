@@ -1,3 +1,4 @@
+import { array } from "fast-check";
 import { BitBoard } from "../Board.ts";
 
 export enum TileState {
@@ -161,26 +162,53 @@ export class Blokus {
         return `Blokus(${this.width}, ${this.height}, ${this.#side.bits}, ${this.#corner.bits}, ${this.#interior.bits})`;
     }
 
-    serializeAscii(): string {
-        return `${this.width}x${this.height}.${this.#side.bits}.${this.#corner.bits}.${this.#interior.bits}`;
-    }
-    
-    static deserializeAscii(board: string): Blokus {
-        const match = board.match(/(\d+)x(\d+)\.(\d+)\.(\d+)\.(\d+)/);
-        if (match === null) {
-            throw new Error('invalid serialization');
+    serialize(): ArrayBuffer {
+        const littleEndian = false;
+        const fieldSize = ((this.height * this.width + 7n) / 8n);
+
+        // field height + width + (size of board in bytes, rounded up) * 3
+        const size = 2n + 2n + fieldSize * 3n;
+        const buffer = new ArrayBuffer(Number(size));
+        const dataView = new DataView(buffer);
+        // first three bytes give the size of each field.
+        // height and width are always 16 bit.
+        dataView.setUint16(0, Number(this.width), littleEndian); // width
+        dataView.setUint16(2, Number(this.height), littleEndian); // height
+        let offset = 4;
+        for (const field of [this.#side.bits, this.#corner.bits, this.#interior.bits]) {
+            for (let byteIndex = 0n; byteIndex < fieldSize; ++byteIndex) {
+                dataView.setUint8(offset, Number((field >> (byteIndex * 8n)) & 0xffn));
+                offset += 1;
+            }
         }
-        const [_, wString, hString, sideString, cornerString, interiorString ] = match;
-        const w = BigInt(wString);
-        const h = BigInt(hString);
-        const side = BigInt(sideString);
-        const corner = BigInt(cornerString);
-        const interior = BigInt(interiorString);
+        return buffer;
+    }
+
+    static deserialize(buffer: ArrayBufferLike): Blokus {
+        const littleEndian = false;
+        const dataView = new DataView(buffer);
+        const width = BigInt(dataView.getUint16(0, littleEndian));
+        const height = BigInt(dataView.getUint16(2, littleEndian));
+        const fieldSize = ((height * width + 7n) / 8n);
+        let offset = 4;
+        const fieldBits = Number(fieldSize * 8n);
+        let fields: Record<string, bigint> = {
+            sideBits: BigInt.asUintN(fieldBits, 0n),
+            cornerBits: BigInt.asUintN(fieldBits, 0n),
+            interiorBits: BigInt.asUintN(fieldBits, 0n),
+
+        };
+        for (let fieldName in fields) {
+            for (let byteIndex = 0n; byteIndex < fieldSize; ++byteIndex) {
+                fields[fieldName] |= BigInt.asUintN(fieldBits, BigInt(dataView.getUint8(offset))) << (byteIndex * 8n);
+                offset += 1;
+            }
+        }
         return new Blokus(
-            new BitBoard(w, h, side),
-            new BitBoard(w, h, corner),
-            new BitBoard(w, h, interior),
-        );
+            new BitBoard(width, height, fields['sideBits']),
+            new BitBoard(width, height, fields['cornerBits']),
+            new BitBoard(width, height, fields['interiorBits']),
+        )
     }
 
     countInterior(): bigint {
@@ -207,6 +235,22 @@ export class Blokus {
             this.#side.rotateClockwise(),
             this.#corner.rotateClockwise(),
             this.#interior.rotateClockwise(),
+        );
+    }
+
+    flipHorizontal(): Blokus {
+        return new Blokus(
+            this.#side.flipHorizontal(),
+            this.#corner.flipHorizontal(),
+            this.#interior.flipHorizontal(),
+        );
+    }
+
+    flipVertical(): Blokus {
+        return new Blokus(
+            this.#side.flipVertical(),
+            this.#corner.flipVertical(),
+            this.#interior.flipVertical(),
         );
     }
 
@@ -239,7 +283,7 @@ export class Blokus {
                     } else {
                         continue;
                     }
-                } 
+                }
 
                 if (polyTile === TileState.Interior) {
                     if (boardTile === TileState.Side || boardTile === TileState.Interior) {
@@ -279,22 +323,45 @@ export class Blokus {
         for (const polyomino of polyominos) {
             let currentPoly = polyomino;
 
-            // Try all 4 rotations
-            for (let rotation = 0; rotation < 4; rotation++) {
-                // TODO: also check reflections
-                if (rotation > 0) {
-                    currentPoly = currentPoly.rotateClockwise();
+            for (let mirror = 0; mirror < 2; ++mirror) {
+                if (mirror > 0) {
+                    currentPoly = currentPoly.flipHorizontal();
                 }
+                // Try all 4 rotations
+                for (let rotation = 0; rotation < 4; rotation++) {
+                    // TODO: also check reflections
+                    if (rotation > 0) {
+                        currentPoly = currentPoly.rotateClockwise();
+                    }
 
-                // For each corner in the board
-                for (const [boardX, boardY] of this.#corner.iterSet()) {
-                    // For each corner in the polyomino
-                    for (const [polyX, polyY] of currentPoly.#corner.iterSet()) {
-                        // Create a copy of the board to test the move
-                        const newBoard = this.clone();
-                        // Try to place the polyomino
-                        if (newBoard.tryPlacePolyomino(boardX, boardY, currentPoly, polyX + 1n, polyY + 1n)) {
-                            yield newBoard;
+                    // For each corner in the board
+                    for (const [boardX, boardY] of this.#corner.iterSet()) {
+                        // For each corner in the polyomino
+                        for (const [polyX, polyY] of currentPoly.#corner.iterSet()) {
+                            for (const [offsetX, offsetY] of [[1n, 1n], [-1n, 1n], [1n, -1n], [-1n, -1n]]) {
+                                const boardInteriorX = boardX + offsetX;
+                                const boardInteriorY = boardY + offsetY;
+                                const pieceInteriorX = polyX - offsetX;
+                                const pieceInteriorY = polyY - offsetY;
+
+                                
+                                if (boardInteriorX >= 0n && boardInteriorX < this.width &&
+                                    boardInteriorY >= 0n && boardInteriorY < this.height &&
+                                    this.get(boardInteriorX, boardInteriorY) !== TileState.Interior) {
+                                    continue;
+                                }
+
+                                if (currentPoly.get(pieceInteriorX, pieceInteriorY) !== TileState.Interior) {
+                                    continue;
+                                }
+
+                                // Create a copy of the board to test the move
+                                let newBoard = this.clone();
+                                // Try to place the polyomino
+                                if (newBoard.tryPlacePolyomino(boardInteriorX, boardInteriorY, currentPoly, polyX, polyY)) {
+                                    yield newBoard;
+                                }
+                            }
                         }
                     }
                 }
