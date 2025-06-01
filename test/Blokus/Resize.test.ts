@@ -11,7 +11,6 @@ test('resize - tile coordiantes don\'t change (grow)', function () {
 test('resize - tile coordiantes don\'t change (shrink)', function () {
     const game = Blokus.empty(10n, 10n);
     game.set(3n, 3n, TileState.Corner);
-    console.log(game.resize(5n, 5n).toStringBoard());
     expect(game.resize(5n, 5n).get(3n, 3n)).toBe(TileState.Corner);
 })
 
