@@ -51,13 +51,12 @@ export class BitBoard {
 
         // use the smaller row mask so it doesn't overflow on either board
         const rowMask = this.width < w ? this.maskRow : newBoard.maskRow;
-        const copyWidth = this.width < w ? this.width : w;
 
         // copy the smaller number of rows so it doesn't overflow either board's height
         const copyHeight = this.height > h ? h : this.height;
 
         for (let i = 0n; i < copyHeight; ++i) {
-            newBoard.#bits |= ((this.#bits & (rowMask << (i * copyWidth))) >> (i * copyWidth)) << (i * w);
+            newBoard.#bits |= ((this.#bits & (rowMask << (i * this.width))) >> (i * this.width)) << (i * w);
         }
 
         return newBoard;
