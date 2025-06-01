@@ -1,14 +1,8 @@
-import { describe, expect, test } from 'bun:test';
+import { expect, test } from 'bun:test';
 import { Blokus } from '../../cgtjs/game/Blokus';
 import { uniqueBy } from '../../cgtjs/utils/unique';
+import { DOMINO } from './util/pieces';
 
-const DOMINO = Blokus.fromString(`
-    csc
-    sis
-    sis
-    csc`);
-
-    
 test('rotate domino 90, 180, 270, and 360 degrees', () => {
     let domino = DOMINO.clone();
     expect(domino.isEqualTo(Blokus.fromString(`
