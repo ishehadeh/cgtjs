@@ -1,4 +1,3 @@
-import { array } from "fast-check";
 import { BitBoard } from "../Board.ts";
 
 export enum TileState {
