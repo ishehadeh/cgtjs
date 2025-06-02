@@ -30,3 +30,10 @@ test("NumberUpStar compares up with rational move set", () => {
 test("[*] => 0", () => {
     expect(canonicalForm([new NumberUpStar(0n, 0n, 1n)], [new NumberUpStar(0n, 0n, 1n)]).partialCompare(new NumberUpStar(0n))).toBe(0);
 })
+
+test("[*, 0] => *2", () => {
+    const moves = [new NumberUpStar(0n, 0n, 0n), new NumberUpStar(0n, 0n, 1n)];
+    const got = canonicalForm(moves, moves.map(m => m.clone()));
+    const expected = new NumberUpStar(0n, 0n, 2n);
+    expect(got.partialCompare(expected), `got: ${got.toString()}`).toBe(0);
+})

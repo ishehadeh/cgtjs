@@ -157,7 +157,7 @@ export class MoveSet extends CanonicalForm {
             let insert = true;
             for (const i in moves) {
                 const cmp = m.partialCompare(moves[i]);
-                if (!Number.isNaN(cmp)) {
+                if (cmp !== null) {
                     // since we have some ordering with an existing move
                     // there's no need to add this one.
                     insert = false;
@@ -246,7 +246,7 @@ export class MoveSet extends CanonicalForm {
                 }
             }
 
-            return new NumberUpStar(0n, this.asNimber() ?? 0n, 0n)
+            return new NumberUpStar(0n, 0n, this.asNimber() ?? 0n);
         }
 
         if (this.rightMoves.length == 0 && this.leftMoves.length > 0) {
