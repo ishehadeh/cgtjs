@@ -265,7 +265,7 @@ export class Blokus {
         console.assert((this.#side.bits & this.#interior.bits) === 0n);
     }
 
-    tryPlacePolyomino(boardX: bigint, boardY: bigint, polyomino: Blokus, polyX: bigint, polyY: bigint): boolean {
+    tryPlacePolyomino(boardX: bigint, boardY: bigint, polyomino: Blokus, polyX: bigint = 0n, polyY: bigint = 0n): boolean {
         const changes: [bigint, bigint, TileState][] = [];
         for (let x = 0n; x < polyomino.width; ++x) {
             for (let y = 0n; y < polyomino.height; ++y) {
