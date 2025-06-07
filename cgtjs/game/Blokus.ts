@@ -313,6 +313,17 @@ export class Blokus {
         return true;
     }
 
+    *movesDeduplicated(polyominos: Blokus[]): Generator<Blokus, void, void> {
+        const alreadySeen = new Set();
+        for (const child of this.moves(polyominos)) {
+            const serialized = child.toString();
+            if (!alreadySeen.has(serialized)) {
+                alreadySeen.add(serialized);
+                yield child;
+            }
+        }
+    }
+
     /**
      * enumerate all possible moves for a given set of polyominos.
      * 
