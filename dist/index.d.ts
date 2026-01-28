@@ -41,6 +41,9 @@ declare class Blokus {
 	private;
 	get width();
 	get height();
+	get corners();
+	get interiors();
+	get sides();
 	constructor(side: BitBoard, corner: BitBoard, interior: BitBoard);
 	static empty(w: bigint, h: bigint): Blokus;
 	static fromString(str: string): Blokus;

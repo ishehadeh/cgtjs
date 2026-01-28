@@ -182,6 +182,15 @@ class Blokus {
   get height() {
     return this.#side.height;
   }
+  get corners() {
+    return this.#corner;
+  }
+  get interiors() {
+    return this.#interior;
+  }
+  get sides() {
+    return this.#side;
+  }
   constructor(side, corner, interior) {
     this.#side = side;
     this.#corner = corner;
