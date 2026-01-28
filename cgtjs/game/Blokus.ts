@@ -20,6 +20,18 @@ export class Blokus {
         return this.#side.height;
     }
 
+    get corners() {
+        return this.#corner;
+    }
+
+    get interiors() {
+        return this.#interior;
+    }
+
+    get sides() {
+        return this.#side;
+    }
+
     constructor(side: BitBoard, corner: BitBoard, interior: BitBoard) {
         this.#side = side
         this.#corner = corner;
