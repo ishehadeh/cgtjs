@@ -6,10 +6,10 @@
  * @returns bigint
  */
 export function expectBigInt(n: unknown, name = 'value'): bigint {
-  if (typeof n != 'number' && typeof n != 'bigint') {
+  if (typeof n !== 'number' && typeof n !== 'bigint') {
     throw new TypeError(`expected ${name} to be numeric, got ${n}`);
   }
-  if (typeof n == 'number' && !Number.isInteger(n)) {
+  if (typeof n === 'number' && !Number.isInteger(n)) {
     throw new TypeError(`expected ${name} to be an integer, got ${n}`);
   }
 

@@ -39,7 +39,7 @@ export class NumberUpStar extends CanonicalForm {
   }
 
   isZero(): boolean {
-    return this.number.isZero() && this.up == 0n && this.star == 0n;
+    return this.number.isZero() && this.up === 0n && this.star === 0n;
   }
 
   constructor(number: DyadicRational | bigint = 0n, up = 0n, star = 0n) {
@@ -97,12 +97,12 @@ export class NumberUpStar extends CanonicalForm {
     const starCmp = compareBigInt(this.star, rhs.star);
 
     // equality is easy...
-    if (numCmp == 0 && upCmp == 0 && starCmp == 0) {
+    if (numCmp === 0 && upCmp === 0 && starCmp === 0) {
       return 0;
     }
 
     // numbers take precedence over infinitesimals
-    if (numCmp != 0) {
+    if (numCmp !== 0) {
       // for any positive number x:
       //  1) -x < ^ < x
       //  2) -x < -^ < x
@@ -113,15 +113,15 @@ export class NumberUpStar extends CanonicalForm {
     }
 
     // +/-^ is incomparable with *
-    if (absBigInt(this.up) == 1n && rhs.up == 0n && rhs.star != 0n) {
+    if (absBigInt(this.up) === 1n && rhs.up === 0n && rhs.star !== 0n) {
       return null;
     }
-    if (absBigInt(rhs.up) == 1n && this.up == 0n && this.star != 0n) {
+    if (absBigInt(rhs.up) === 1n && this.up === 0n && this.star !== 0n) {
       return null;
     }
 
     // everything is equal except (maybe) star, so these values are incomparable
-    if (upCmp == 0) {
+    if (upCmp === 0) {
       return null;
     } else {
       // with the exception of +/-^1, up overrules star
@@ -133,7 +133,7 @@ export class NumberUpStar extends CanonicalForm {
    * @returns {DyadicRational | null}
    */
   asNumber() {
-    if (this.up == 0n && this.star == 0n) {
+    if (this.up === 0n && this.star === 0n) {
       return this.number;
     } else {
       return null;
@@ -144,7 +144,7 @@ export class NumberUpStar extends CanonicalForm {
    * @returns {bigint | null}
    */
   asNimber() {
-    if (this.up == 0n && this.number.isZero()) {
+    if (this.up === 0n && this.number.isZero()) {
       return this.star;
     } else {
       return null;
@@ -165,7 +165,7 @@ export class NumberUpStar extends CanonicalForm {
     }
 
     // player moves on star game
-    if (this.star != 0n) {
+    if (this.star !== 0n) {
       for (let i = 0n; i < this.star; ++i) {
         yield new NumberUpStar(this.number, this.up);
       }
@@ -187,7 +187,7 @@ export class NumberUpStar extends CanonicalForm {
     }
 
     // player moves on star game
-    if (this.star != 0n) {
+    if (this.star !== 0n) {
       for (let i = 0n; i < this.star; ++i) {
         yield new NumberUpStar(this.number, this.up);
       }
@@ -195,18 +195,18 @@ export class NumberUpStar extends CanonicalForm {
   }
 
   toString() {
-    if (this.number.isZero() && this.up == 0n && this.star == 0n) {
+    if (this.number.isZero() && this.up === 0n && this.star === 0n) {
       return '0';
     }
     let str = '';
     if (!this.number.isZero()) {
       str += this.number.toString();
     }
-    if (this.up != 0n) {
+    if (this.up !== 0n) {
       if (str) {
         str += ' + ';
       }
-      if (this.up != 1n && this.up != -1n) {
+      if (this.up !== 1n && this.up !== -1n) {
         str += absBigInt(this.up).toString();
       }
       if (this.up > 0) {
@@ -215,7 +215,7 @@ export class NumberUpStar extends CanonicalForm {
         str += '↓';
       }
     }
-    if (this.star != 0n) {
+    if (this.star !== 0n) {
       if (str) {
         str += ' + ';
       }

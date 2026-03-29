@@ -1,6 +1,6 @@
+import { expect, test } from 'bun:test';
 import { Blokus } from '../cgtjs/game/Blokus';
 import { uniqueBy } from '../cgtjs/utils/unique';
-import { expect, test } from 'bun:test';
 
 test('uniqueBy removes duplicates from an array of strings based on identity', () => {
   const input = ['a', 'b', 'a', 'c', 'b', 'd'];

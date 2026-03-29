@@ -197,21 +197,21 @@ export class Blokus {
     const fieldSize = (height * width + 7n) / 8n;
     let offset = 4;
     const fieldBits = Number(fieldSize * 8n);
-    let fields: Record<string, bigint> = {
+    const fields: Record<string, bigint> = {
       sideBits: BigInt.asUintN(fieldBits, 0n),
       cornerBits: BigInt.asUintN(fieldBits, 0n),
       interiorBits: BigInt.asUintN(fieldBits, 0n),
     };
-    for (let fieldName in fields) {
+    for (const fieldName in fields) {
       for (let byteIndex = 0n; byteIndex < fieldSize; ++byteIndex) {
         fields[fieldName] |= BigInt.asUintN(fieldBits, BigInt(dataView.getUint8(offset))) << (byteIndex * 8n);
         offset += 1;
       }
     }
     return new Blokus(
-      new BitBoard(width, height, fields['sideBits']),
-      new BitBoard(width, height, fields['cornerBits']),
-      new BitBoard(width, height, fields['interiorBits']),
+      new BitBoard(width, height, fields.sideBits),
+      new BitBoard(width, height, fields.cornerBits),
+      new BitBoard(width, height, fields.interiorBits),
     );
   }
 
@@ -294,7 +294,6 @@ export class Blokus {
           // nothing to do
         } else if (polyTile === TileState.Side) {
           if (boardTile === TileState.Interior) {
-            continue;
           } else {
             changes.push([tileX, tileY, polyTile]);
           }
@@ -369,7 +368,7 @@ export class Blokus {
                 }
 
                 // Create a copy of the board to test the move
-                let newBoard = this.clone();
+                const newBoard = this.clone();
                 // Try to place the polyomino
                 if (newBoard.tryPlacePolyomino(boardInteriorX, boardInteriorY, currentPoly, polyX, polyY)) {
                   yield newBoard;

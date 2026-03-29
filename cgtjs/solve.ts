@@ -1,6 +1,5 @@
-import { CanonicalForm } from './CanonicalForm';
 import { Blokus, TileState } from './game/Blokus';
-import { canonicalForm, MoveSet } from './MoveSet';
+import { canonicalForm, type MoveSet } from './MoveSet';
 import type { NumberUpStar } from './NumberUpStar';
 
 function solve(blokus: Blokus, poly: Blokus[]): NumberUpStar | MoveSet {

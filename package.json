@@ -6,7 +6,8 @@
   "version": "0.1.0",
   "scripts": {
     "format": "biome format --write .",
-    "format:check": "biome ci ."
+    "lint": "biome lint .",
+    "format:check": "biome ci . --error-on-warnings"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.9",

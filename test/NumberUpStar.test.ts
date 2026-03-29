@@ -1,19 +1,19 @@
-import { expect, test, describe } from 'bun:test';
+import { expect, test } from 'bun:test';
 import { DyadicRational } from '../cgtjs/DyadicRational.ts';
+import { canonicalForm } from '../cgtjs/MoveSet.ts';
 import { NumberUpStar } from '../cgtjs/NumberUpStar.ts';
-import { MoveSet, canonicalForm } from '../cgtjs/MoveSet.ts';
 
 test('NumberUpStar comparison 0 || *', () => {
-  let zero = new NumberUpStar(0n, 0n, 0n);
-  let star = new NumberUpStar(0n, 0n, 1n);
+  const zero = new NumberUpStar(0n, 0n, 0n);
+  const star = new NumberUpStar(0n, 0n, 1n);
 
   expect(zero.partialCompare(star)).toBe(null);
 });
 
 test('NumberUpStar compares up & up move set with star', () => {
-  let up = new NumberUpStar(0n, 1n, 0n);
-  let down = new NumberUpStar(0n, -1n, 0n);
-  let star = new NumberUpStar(0n, 0n, 1n);
+  const up = new NumberUpStar(0n, 1n, 0n);
+  const down = new NumberUpStar(0n, -1n, 0n);
+  const star = new NumberUpStar(0n, 0n, 1n);
 
   expect(star.partialCompare(up)).toBe(null);
   expect(star.partialCompare(down)).toBe(null);

@@ -97,7 +97,7 @@ test('top right corner', () => {
   ]);
 });
 
-test('allows placing side square of polyomino on interior square', function () {
+test('allows placing side square of polyomino on interior square', () => {
   const game = Blokus.fromString(
     `ci
          .i`,

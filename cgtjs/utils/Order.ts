@@ -6,7 +6,7 @@ export class Order extends PartialOrder {
    *  Implementing this interface implies that any two object's of the implementor's
    *  type fall into one of the above cases (<, >, or ==).
    */
-  compare(rhs: unknown): Ordering {
+  compare(_rhs: unknown): Ordering {
     throw Error('Not Implement: Order.compare');
   }
 

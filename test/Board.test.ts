@@ -1,7 +1,7 @@
 import { expect, test } from 'bun:test';
 import { BitBoard } from '../cgtjs/Board';
 
-test('vertical flip - 2x2 BitBoard', function () {
+test('vertical flip - 2x2 BitBoard', () => {
   const board = new BitBoard(2n, 2n);
   board.set(0n, 0n);
   board.set(1n, 1n);
@@ -12,7 +12,7 @@ test('vertical flip - 2x2 BitBoard', function () {
   expect(board.bits).toBe(0b0110n);
 });
 
-test('vertical flip - 3x3 BitBoard', function () {
+test('vertical flip - 3x3 BitBoard', () => {
   const board = new BitBoard(3n, 3n);
   board.set(0n, 0n);
   board.set(1n, 1n);
@@ -24,7 +24,7 @@ test('vertical flip - 3x3 BitBoard', function () {
   expect(board.bits).toBe(0b001_010_010n);
 });
 
-test('vertical flip - 4x4 BitBoard', function () {
+test('vertical flip - 4x4 BitBoard', () => {
   const board = new BitBoard(4n, 4n);
   board.set(1n, 1n);
   board.set(1n, 2n);
@@ -39,7 +39,7 @@ test('vertical flip - 4x4 BitBoard', function () {
   expect(board.bits).toBe(0b1111_0010_0010_1001n);
 });
 
-test('horizontal flip - 2x2 BitBoard', function () {
+test('horizontal flip - 2x2 BitBoard', () => {
   const board = new BitBoard(2n, 2n, 0b10_01n);
   expect(board.bits).toBe(0b10_01n);
 
@@ -47,7 +47,7 @@ test('horizontal flip - 2x2 BitBoard', function () {
   expect(board.bits).toBe(0b01_10n);
 });
 
-test('horizontal flip - 3x3 BitBoard', function () {
+test('horizontal flip - 3x3 BitBoard', () => {
   const board = new BitBoard(3n, 3n, 0b010_010_001n);
   expect(board.bits).toBe(0b010_010_001n);
 
@@ -55,7 +55,7 @@ test('horizontal flip - 3x3 BitBoard', function () {
   expect(board.bits).toBe(0b010_010_100n);
 });
 
-test('horizontal flip - 4x4 BitBoard', function () {
+test('horizontal flip - 4x4 BitBoard', () => {
   const board = new BitBoard(4n, 4n, 0b1001_0010_0010_1011n);
   expect(board.bits).toBe(0b1001_0010_0010_1011n);
 
@@ -63,7 +63,7 @@ test('horizontal flip - 4x4 BitBoard', function () {
   expect(board.bits).toBe(0b1001_0100_0100_1101n);
 });
 
-test('horizontal flip - 4x3 BitBoard, symmetric', function () {
+test('horizontal flip - 4x3 BitBoard, symmetric', () => {
   const board = new BitBoard(4n, 3n, 0b1001_0000_1001n);
   expect(board.bits).toBe(0b1001_0000_1001n);
 
@@ -71,7 +71,7 @@ test('horizontal flip - 4x3 BitBoard, symmetric', function () {
   expect(board.bits).toBe(0b1001_0000_1001n);
 });
 
-test('horizontal flip - 3x4 BitBoard, symmetric', function () {
+test('horizontal flip - 3x4 BitBoard, symmetric', () => {
   const board = new BitBoard(3n, 4n, 0b101_000_000_101n);
   expect(board.bits).toBe(0b101_000_000_101n);
 
@@ -79,21 +79,21 @@ test('horizontal flip - 3x4 BitBoard, symmetric', function () {
   expect(board.bits).toBe(0b101_000_000_101n);
 });
 
-test('transpose - 2x2 BitBoard', function () {
+test('transpose - 2x2 BitBoard', () => {
   const board = new BitBoard(2n, 2n, 0b10_01n);
   expect(board.bits).toBe(0b10_01n);
 
   expect(board.transpose().bits).toBe(0b10_01n);
 });
 
-test('transpose - 3x3 BitBoard', function () {
+test('transpose - 3x3 BitBoard', () => {
   const board = new BitBoard(3n, 3n, 0b010_010_001n);
   expect(board.bits).toBe(0b010_010_001n);
 
   expect(board.transpose().bits).toBe(0b000_110_001n);
 });
 
-test('transpose - 4x4 BitBoard', function () {
+test('transpose - 4x4 BitBoard', () => {
   const board = new BitBoard(4n, 4n, 0b1001_0010_0010_1011n);
   expect(board.bits).toBe(0b1001_0010_0010_1011n);
 
@@ -101,21 +101,21 @@ test('transpose - 4x4 BitBoard', function () {
   expect(board.bits).toBe(0b1001_0100_0100_1101n);
 });
 
-test('transpose - 4x3 BitBoard (bottom row empty)', function () {
+test('transpose - 4x3 BitBoard (bottom row empty)', () => {
   const board = new BitBoard(4n, 3n, 0b0100_0101_0010n);
   expect(board.bits).toBe(0b0100_0101_0010n);
 
   expect(board.transpose().bits).toBe(0b000_110_001_010n);
 });
 
-test('transpose - 4x3 BitBoard (bottom row non-empty)', function () {
+test('transpose - 4x3 BitBoard (bottom row non-empty)', () => {
   const board = new BitBoard(4n, 3n, 0b1100_0101_1010n);
   expect(board.bits).toBe(0b1100_0101_1010n);
 
   expect(board.transpose().bits).toBe(0b101_110_001_010n);
 });
 
-test('rotate clockwise - 2x2 BitBoard', function () {
+test('rotate clockwise - 2x2 BitBoard', () => {
   const board = new BitBoard(2n, 2n, 0b10_01n);
   expect(board.bits).toBe(0b10_01n);
   expect(board.rotateClockwise().bits).toBe(0b01_10n);
@@ -123,47 +123,47 @@ test('rotate clockwise - 2x2 BitBoard', function () {
   expect(new BitBoard(2n, 2n, 0b10_11n).rotateClockwise().bits).toBe(0b11_10n);
 });
 
-test('rotate clockwise - 3x3 BitBoard', function () {
+test('rotate clockwise - 3x3 BitBoard', () => {
   const board = new BitBoard(3n, 3n, 0b010_010_001n);
   expect(board.bits).toBe(0b010_010_001n);
 
   expect(board.rotateClockwise().bits).toBe(0b000_011_100n);
 });
 
-test('rotate clockwise - 4x3 BitBoard', function () {
+test('rotate clockwise - 4x3 BitBoard', () => {
   const board = new BitBoard(4n, 3n, 0b0100_0101_0010n);
   expect(board.bits).toBe(0b0100_0101_0010n);
 
   expect(board.rotateClockwise().bits).toBe(0b000_011_100_010n);
 });
 
-test('rotate clockwise - 3x3 BitBoard, symmetric', function () {
+test('rotate clockwise - 3x3 BitBoard, symmetric', () => {
   const board = new BitBoard(3n, 3n, 0b101_000_101n);
   expect(board.bits).toBe(0b101_000_101n);
 
   expect(board.rotateClockwise().bits).toBe(0b101_000_101n);
 });
 
-test('transpose - 3x4 BitBoard, symmetric', function () {
+test('transpose - 3x4 BitBoard, symmetric', () => {
   const board = new BitBoard(4n, 3n, 0b1001_0000_1001n);
   expect(board.bits).toBe(0b1001_0000_1001n);
 
   expect(board.transpose().bits).toBe(0b101_000_000_101n);
 });
 
-test('rotate clockwise - 3x4 BitBoard, symmetric', function () {
+test('rotate clockwise - 3x4 BitBoard, symmetric', () => {
   const board = new BitBoard(4n, 3n, 0b1001_0000_1001n);
   expect(board.bits).toBe(0b1001_0000_1001n);
 
   expect(board.rotateClockwise().bits).toBe(0b101_000_000_101n);
 });
 
-test('resize - 1x1 to 3x3', function () {
+test('resize - 1x1 to 3x3', () => {
   const board = new BitBoard(1n, 1n, 1n);
   expect(board.resize(3n, 3n).bits).toBe(1n);
 });
 
-test('resize - 2x2 to 3x5, rows extend', function () {
+test('resize - 2x2 to 3x5, rows extend', () => {
   const board = new BitBoard(2n, 2n, 0b10_01n);
   expect(board.resize(3n, 5n).bits).toBe(0b010_001n);
 });

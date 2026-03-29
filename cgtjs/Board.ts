@@ -191,7 +191,7 @@ export class BitBoard {
 
   *iterClear(): Generator<[bigint, bigint], void> {
     for (let i = 0n; i < this.width * this.height; ++i) {
-      if ((this.#bits & (1n << i)) == 0n) {
+      if ((this.#bits & (1n << i)) === 0n) {
         yield [i % this.width, i / this.width];
       }
     }

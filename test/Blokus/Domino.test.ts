@@ -1,8 +1,7 @@
 import { expect, test } from 'bun:test';
+import { canonicalForm, type MoveSet, NumberUpStar } from '../../cgtjs';
 import { Blokus, TileState } from '../../cgtjs/game/Blokus';
-import { uniqueBy } from '../../cgtjs/utils/unique';
 import { DOMINO } from './util/pieces';
-import { canonicalForm, NumberUpStar, type MoveSet } from '../../cgtjs';
 
 function solve(blokus: Blokus, poly: Blokus[]): NumberUpStar | MoveSet {
   const solveChildren: Blokus[] = [];
