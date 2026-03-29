@@ -1,6 +1,7 @@
 # Editor Configs
 
 .vscode/
+.cursor/
 
 # Dependency Stores
 
