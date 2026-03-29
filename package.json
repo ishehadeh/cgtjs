@@ -1,6 +1,7 @@
 {
   "name": "cgtjs",
   "module": "cgtjs/index.ts",
+  "types": "cgtjs/index.ts",
   "type": "module",
   "version": "0.1.0",
   "devDependencies": {
