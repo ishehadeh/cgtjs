@@ -1,4 +1,4 @@
-import { expect, test } from 'bun:test';
+import { expect, test } from 'vitest';
 import { canonicalForm, type MoveSet, NumberUpStar } from '../../cgtjs';
 import { Blokus, TileState } from '../../cgtjs/game/Blokus';
 import { DOMINO } from './util/pieces';

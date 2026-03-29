@@ -1,4 +1,4 @@
-import { expect, test } from 'bun:test';
+import { expect, test } from 'vitest';
 import { Blokus } from '../../cgtjs/game/Blokus';
 
 const DOMINO = Blokus.fromString(`

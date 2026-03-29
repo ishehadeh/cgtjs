@@ -1,4 +1,4 @@
-import { expect, test } from 'bun:test';
+import { expect, test } from 'vitest';
 import { DyadicRational } from '../cgtjs/DyadicRational';
 
 test('2 + 2 = 4', () => {

@@ -1,4 +1,4 @@
-import { expect, test } from 'bun:test';
+import { expect, test } from 'vitest';
 import { Blokus } from '../cgtjs/game/Blokus';
 import { uniqueBy } from '../cgtjs/utils/unique';
 
