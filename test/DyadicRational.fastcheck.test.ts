@@ -1,5 +1,5 @@
+import { describe, test } from 'bun:test';
 import fc from 'fast-check';
-import { expect, test, describe } from 'bun:test';
 import { DyadicRational } from '../cgtjs/DyadicRational.ts';
 
 function fcDyadicRational(

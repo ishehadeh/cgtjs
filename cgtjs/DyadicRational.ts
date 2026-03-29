@@ -1,5 +1,5 @@
-import { expectBigInt } from './utils/typecheck.ts';
 import { compareBigInt } from './utils/compare.ts';
+import { expectBigInt } from './utils/typecheck.ts';
 
 export class DyadicRational {
   /** the "m" in m/(2^n)
@@ -73,7 +73,7 @@ export class DyadicRational {
   }
 
   toString() {
-    if (this.denominatorExp == 0n) {
+    if (this.denominatorExp === 0n) {
       return this.numerator.toString();
     } else {
       return `${this.numerator}/${this.denominator()}`;
@@ -110,7 +110,7 @@ export class DyadicRational {
   /** Simplify the fraction, this operation should be run after construction, or any arithmetic.
    */
   normalize() {
-    while (this.#denominatorExp > 0n && this.#numerator % 2n == 0n) {
+    while (this.#denominatorExp > 0n && this.#numerator % 2n === 0n) {
       this.#denominatorExp -= 1n;
       this.#numerator /= 2n;
     }
@@ -124,7 +124,7 @@ export class DyadicRational {
    *  @returns {boolean}
    */
   isZero() {
-    return this.numerator == 0n;
+    return this.numerator === 0n;
   }
 
   /** Get the right options

@@ -1,5 +1,5 @@
 import { expect, test } from 'bun:test';
-import { Blokus, TileState } from '../../cgtjs/game/Blokus';
+import { Blokus } from '../../cgtjs/game/Blokus';
 
 const DOMINO = Blokus.fromString(`
         csc
@@ -7,7 +7,7 @@ const DOMINO = Blokus.fromString(`
         sis
         csc`);
 
-test('place a domino in empty 8x8', function () {
+test('place a domino in empty 8x8', () => {
   const game = Blokus.empty(8n, 8n);
   expect(game.tryPlacePolyomino(0n, 0n, DOMINO, 0n, 0n)).toBe(true);
   expect(
@@ -27,7 +27,7 @@ test('place a domino in empty 8x8', function () {
   ).toBe(true);
 });
 
-test('overlap interiors are not allowed', function () {
+test('overlap interiors are not allowed', () => {
   const game = Blokus.empty(8n, 8n);
   expect(game.tryPlacePolyomino(0n, 0n, DOMINO, 0n, 0n)).toBe(true);
   expect(game.tryPlacePolyomino(0n, 1n, DOMINO, 0n, 0n)).toBe(false);
@@ -49,7 +49,7 @@ test('overlap interiors are not allowed', function () {
   ).toBe(true);
 });
 
-test('domino placed on corner is allowed', function () {
+test('domino placed on corner is allowed', () => {
   const game = Blokus.empty(8n, 8n);
   expect(game.tryPlacePolyomino(0n, 0n, DOMINO, 0n, 0n)).toBe(true);
   expect(game.tryPlacePolyomino(2n, 3n, DOMINO, 1n, 1n)).toBe(true);
@@ -71,7 +71,7 @@ test('domino placed on corner is allowed', function () {
   ).toBe(true);
 });
 
-test('domino placed on corner, rotate', function () {
+test('domino placed on corner, rotate', () => {
   const game = Blokus.empty(8n, 8n);
   expect(game.tryPlacePolyomino(0n, 0n, DOMINO, 1n, 1n)).toBe(true);
   expect(game.tryPlacePolyomino(1n, 2n, DOMINO.rotateClockwise(), 1n, 1n)).toBe(true);
@@ -90,11 +90,11 @@ test('domino placed on corner, rotate', function () {
         ........`,
       ),
     ),
-    '\n' + game.toStringBoard(),
+    `\n${game.toStringBoard()}`,
   ).toBe(true);
 });
 
-test('domino placed with overflowing side', function () {
+test('domino placed with overflowing side', () => {
   const game = Blokus.empty(8n, 8n);
   expect(game.tryPlacePolyomino(0n, 0n, DOMINO, 1n, 1n)).toBe(true);
   expect(game.tryPlacePolyomino(7n, 6n, DOMINO, 1n, 1n)).toBe(true);

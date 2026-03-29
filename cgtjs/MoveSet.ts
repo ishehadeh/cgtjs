@@ -63,7 +63,7 @@ export class MoveSet extends CanonicalForm {
    * @returns {boolean}
    */
   isZero() {
-    return this.left.length == 0 && this.right.length == 0;
+    return this.left.length === 0 && this.right.length === 0;
   }
 
   /** Bypass reversible moves for the left player
@@ -71,8 +71,8 @@ export class MoveSet extends CanonicalForm {
   bypassReversibleL() {
     for (let i = 0; i < this.left.length; ++i) {
       for (const lR of this.left[i].rightMoves) {
-        if (lR.partialCompare(this) ?? NaN <= 0) {
-          let moves = [...lR.leftMoves];
+        if (lR.partialCompare(this) ?? Number.isNaN(0)) {
+          const moves = [...lR.leftMoves];
           if (moves.length > 0) {
             this.left[i] = moves[0];
             if (moves.length > 1) {
@@ -92,8 +92,8 @@ export class MoveSet extends CanonicalForm {
     let str = '{ ';
     for (const l in this.left) {
       str += this.left[l].toString();
-      if (+l == this.left.length - 1) {
-        if (this.right.length == 0) {
+      if (+l === this.left.length - 1) {
+        if (this.right.length === 0) {
           str += '| }';
         } else {
           str += ' | ';
@@ -102,13 +102,13 @@ export class MoveSet extends CanonicalForm {
         str += ', ';
       }
     }
-    if (this.left.length == 0) {
+    if (this.left.length === 0) {
       str += '| ';
     }
 
     for (const r in this.right) {
       str += this.right[r].toString();
-      if (+r == this.right.length - 1) {
+      if (+r === this.right.length - 1) {
         str += ' }';
       } else {
         str += ', ';
@@ -122,8 +122,8 @@ export class MoveSet extends CanonicalForm {
   bypassReversibleR() {
     for (let i = 0; i < this.right.length; ++i) {
       for (const rL of this.right[i].leftMoves) {
-        if (rL.partialCompare(this) ?? NaN >= 0) {
-          let moves = [...rL.rightMoves];
+        if (rL.partialCompare(this) ?? Number.isNaN(0)) {
+          const moves = [...rL.rightMoves];
           if (moves.length > 0) {
             this.right[i] = moves[0];
             if (moves.length > 1) {
@@ -145,7 +145,7 @@ export class MoveSet extends CanonicalForm {
   removeDominatedMoves(left: boolean) {
     const moves: CanonicalForm[] = [];
     const existingMoves = left ? this.left : this.right;
-    if (existingMoves.length == 1) {
+    if (existingMoves.length === 1) {
       return;
     }
 
@@ -158,7 +158,7 @@ export class MoveSet extends CanonicalForm {
           // there's no need to add this one.
           insert = false;
 
-          if (cmp == 0 || (left && cmp == -1) || (!left && cmp == 1)) {
+          if (cmp === 0 || (left && cmp === -1) || (!left && cmp === 1)) {
             // skip moves which already have a better move in the list
             break;
           } else {
@@ -235,7 +235,7 @@ export class MoveSet extends CanonicalForm {
     }
 
     if (this.isImpartial()) {
-      if (this.leftMoves.length == 1) {
+      if (this.leftMoves.length === 1) {
         const number = this.leftMoves[0].asNumber();
         if (number != null) {
           return new NumberUpStar(number, 0n, 1n);
@@ -245,31 +245,31 @@ export class MoveSet extends CanonicalForm {
       return new NumberUpStar(0n, 0n, this.asNimber() ?? 0n);
     }
 
-    if (this.rightMoves.length == 0 && this.leftMoves.length > 0) {
-      let left = this.leftMoves;
+    if (this.rightMoves.length === 0 && this.leftMoves.length > 0) {
+      const left = this.leftMoves;
       let zeroCmp = left[0].partialCompare(new NumberUpStar(0n));
-      for (const l in left.slice(1)) {
+      for (const _l in left.slice(1)) {
         const lZeroCmp = left[0].partialCompare(new NumberUpStar(0n));
-        if (lZeroCmp != zeroCmp) {
+        if (lZeroCmp !== zeroCmp) {
           zeroCmp = null;
           break;
         }
       }
-      if (zeroCmp == -1) {
+      if (zeroCmp === -1) {
         return new NumberUpStar(0n);
       }
     }
-    if (this.leftMoves.length == 0 && this.rightMoves.length > 0) {
-      let left = this.rightMoves;
+    if (this.leftMoves.length === 0 && this.rightMoves.length > 0) {
+      const left = this.rightMoves;
       let zeroCmp = left[0].partialCompare(new NumberUpStar(0n));
-      for (const l in left.slice(1)) {
+      for (const _l in left.slice(1)) {
         const lZeroCmp = left[0].partialCompare(new NumberUpStar(0n));
-        if (lZeroCmp != zeroCmp) {
+        if (lZeroCmp !== zeroCmp) {
           zeroCmp = null;
           break;
         }
       }
-      if (zeroCmp == -1) {
+      if (zeroCmp === -1) {
         return new NumberUpStar(0n);
       }
     }
@@ -283,12 +283,12 @@ export class MoveSet extends CanonicalForm {
     for (const gL of this.leftMoves) {
       let found = false;
       for (const gR of this.rightMoves) {
-        if (gR.partialCompare(gL) == 0) {
+        if (gR.partialCompare(gL) === 0) {
           found = true;
           break;
         }
       }
-      if (found == false) return false;
+      if (found === false) return false;
     }
     return true;
   }
@@ -297,23 +297,24 @@ export class MoveSet extends CanonicalForm {
    * i.e. return n + ^ +  * if {n,n*|n} or n + -^ + * if {n|n,n*}
    */
   asUpStar() {
-    let a1, a2;
-    let b1;
-    let star;
+    let a1: CanonicalForm | undefined;
+    let a2: CanonicalForm | undefined;
+    let b1: CanonicalForm | undefined;
+    let star: bigint | undefined;
 
-    if (this.left.length == 2 && this.right.length == 1) {
+    if (this.left.length === 2 && this.right.length === 1) {
       [a1, a2] = this.left;
       [b1] = this.right;
       star = 1n;
-    } else if (this.left.length == 1 && this.right.length == 2) {
+    } else if (this.left.length === 1 && this.right.length === 2) {
       [a1, a2] = this.right;
       [b1] = this.left;
       star = -1n;
     }
 
     if (a1 instanceof NumberUpStar && a2 instanceof NumberUpStar && b1 instanceof NumberUpStar) {
-      if (a1.number == a2.number && b1.number == a1.number && b1.up == 0n && a1.up == 0n && a2.up == 0n) {
-        if ((a1.star == 0n && a2.star == 1n) || (a2.star == 0n && a1.star == 1n)) {
+      if (a1.number === a2.number && b1.number === a1.number && b1.up === 0n && a1.up === 0n && a2.up === 0n) {
+        if ((a1.star === 0n && a2.star === 1n) || (a2.star === 0n && a1.star === 1n)) {
           return new NumberUpStar(a1.number, star, 1n);
         }
       }
@@ -326,9 +327,9 @@ export class MoveSet extends CanonicalForm {
    *  or returns ^ if the game is {0|*} or -^ if the game is {*|0}
    */
   asUp() {
-    if (this.left.length == 1 && this.right.length == 1) {
-      let [l] = this.left;
-      let [r] = this.right;
+    if (this.left.length === 1 && this.right.length === 1) {
+      const [l] = this.left;
+      const [r] = this.right;
       if (l instanceof NumberUpStar && r instanceof NumberUpStar) {
         if (l.isZero() && (r.up > 0n || r.star > 0n)) {
           return new NumberUpStar(r.number, r.up + 1n, r.star ^ 1n);
@@ -344,20 +345,20 @@ export class MoveSet extends CanonicalForm {
     let leftMax = null;
     let rightMin = null;
     for (const l of this.leftMoves) {
-      let lNum = l.asNumber();
+      const lNum = l.asNumber();
       if (lNum == null) {
         return null;
       }
-      if (leftMax == null || leftMax.compare(lNum) == -1) {
+      if (leftMax == null || leftMax.compare(lNum) === -1) {
         leftMax = lNum;
       }
     }
     for (const r of this.rightMoves) {
-      let rNum = r.asNumber();
+      const rNum = r.asNumber();
       if (rNum == null) {
         return null;
       }
-      if (rightMin == null || rightMin.compare(rNum) == 1) {
+      if (rightMin == null || rightMin.compare(rNum) === 1) {
         rightMin = rNum;
       }
     }
@@ -387,7 +388,7 @@ export class MoveSet extends CanonicalForm {
       throw new Error('unreachable');
     }
 
-    if (leftMax.compare(rightMin) != -1) {
+    if (leftMax.compare(rightMin) !== -1) {
       return null;
     }
 
@@ -398,10 +399,10 @@ export class MoveSet extends CanonicalForm {
     }
 
     // 2: try to find the smallest denominator
-    let dist = rightMin.clone();
-    let endpointOffset;
+    const dist = rightMin.clone();
+    let endpointOffset: DyadicRational;
     dist.sub(leftMax);
-    if (dist.numerator == 1n) {
+    if (dist.numerator === 1n) {
       // forced to split the rational number
       endpointOffset = new DyadicRational(1n, dist.denominatorExp + 1n);
     } else {
