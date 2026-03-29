@@ -1,7 +1,7 @@
 // import { Blokus } from ";
 
-import { ssrImportKey } from "vite/module-runner";
-import { Blokus } from "../../../cgtjs/index.ts";
+import { ssrImportKey } from 'vite/module-runner';
+import { Blokus } from '../../../cgtjs/index.ts';
 
 export const DOMINO = Blokus.fromString(`
     csc
