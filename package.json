@@ -4,7 +4,12 @@
   "types": "cgtjs/index.ts",
   "type": "module",
   "version": "0.1.0",
+  "scripts": {
+    "format": "biome format --write .",
+    "format:check": "biome ci ."
+  },
   "devDependencies": {
+    "@biomejs/biome": "^2.4.9",
     "@types/bun": "latest",
     "fast-check": "^4.0.0",
     "vite": "^6.3.5",
