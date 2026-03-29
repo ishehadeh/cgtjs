@@ -19,8 +19,50 @@
     "formatWithErrors": false
   },
   "linter": {
-    "enabled": false
+    "enabled": true,
+    "domains": {
+      "project": "all",
+      "test": "all",
+      "types": "all"
+    },
+    "rules": {
+      "recommended": true,
+      "nursery": {
+        "recommended": true
+      },
+      "correctness": {
+        "recommended": true,
+        "useImportExtensions": "off"
+      },
+      "suspicious": {
+        "recommended": true,
+        "noBitwiseOperators": "off",
+        "noImportCycles": "off"
+      },
+      "style": {
+        "recommended": true,
+        "noMagicNumbers": "off"
+      }
+    }
   },
+  "overrides": [
+    {
+      "includes": ["walkthrough.html"],
+      "linter": {
+        "enabled": false
+      }
+    },
+    {
+      "includes": ["test/**/*.ts"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUnresolvedImports": "off"
+          }
+        }
+      }
+    }
+  ],
   "javascript": {
     "formatter": {
       "quoteStyle": "single",
