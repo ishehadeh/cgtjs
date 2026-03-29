@@ -1,4 +1,4 @@
-import { expect, test } from 'bun:test';
+import { expect, test } from 'vitest';
 import { BitBoard } from '../cgtjs/Board';
 
 test('vertical flip - 2x2 BitBoard', () => {

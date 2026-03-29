@@ -1,4 +1,4 @@
-import { expect, test } from 'bun:test';
+import { expect, test } from 'vitest';
 import { DyadicRational } from '../cgtjs/DyadicRational.ts';
 import { canonicalForm } from '../cgtjs/MoveSet.ts';
 import { NumberUpStar } from '../cgtjs/NumberUpStar.ts';

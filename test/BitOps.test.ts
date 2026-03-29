@@ -1,4 +1,4 @@
-import { expect, test } from 'bun:test';
+import { expect, test } from 'vitest';
 import { deltaSwap } from '../cgtjs/Board';
 
 test('deltaSwap swaps single bit pattern', () => {

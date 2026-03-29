@@ -1,4 +1,4 @@
-import { expect, test } from 'bun:test';
+import { expect, test } from 'vitest';
 import { Blokus, TileState } from '../../cgtjs/game/Blokus';
 
 test("resize - tile coordiantes don't change (grow)", () => {
