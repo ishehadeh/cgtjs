@@ -1,15 +1,15 @@
-import { CanonicalForm } from "./CanonicalForm";
-import { Blokus, TileState } from "./game/Blokus";
-import { canonicalForm, MoveSet } from "./MoveSet";
-import type { NumberUpStar } from "./NumberUpStar";
+import { CanonicalForm } from './CanonicalForm';
+import { Blokus, TileState } from './game/Blokus';
+import { canonicalForm, MoveSet } from './MoveSet';
+import type { NumberUpStar } from './NumberUpStar';
 
-function solve(blokus: Blokus, poly: Blokus[]): NumberUpStar|MoveSet {
-    const canonMoves = []
-    for (const move of blokus.moves(poly)) {
-        canonMoves.push(solve(move, poly));
-    }
+function solve(blokus: Blokus, poly: Blokus[]): NumberUpStar | MoveSet {
+  const canonMoves = [];
+  for (const move of blokus.moves(poly)) {
+    canonMoves.push(solve(move, poly));
+  }
 
-    return canonicalForm(canonMoves, canonMoves);
+  return canonicalForm(canonMoves, canonMoves);
 }
 
 const DOMINO = Blokus.fromString(`
