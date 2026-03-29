@@ -311,7 +311,7 @@ export class Blokus {
                     // nothing to do
                 } else if (polyTile === TileState.Side) {
                     if (boardTile === TileState.Interior) {
-                        return false;
+                      continue;
                     } else {
                         changes.push([tileX, tileY, polyTile]);
                     }
