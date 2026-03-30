@@ -1,15 +1,13 @@
 # cgtjs
 
-To install dependencies:
+TypeScript primitives for combinatorial game theory, and a few game implementations
+
+## Development
 
 ```bash
 bun install
+bun run build    # generate dist/index.js + dist/*.d.ts
+bun run test     # run test suite
+bun run check    # run linter and formatter
+bun run fix      # run linter and formatter in write mode
 ```
-
-To run:
-
-```bash
-bun run cgtjs/index.ts
-```
-
-This project was created using `bun init` in bun v1.1.30. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
