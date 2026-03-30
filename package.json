@@ -9,9 +9,16 @@
   ],
   "scripts": {
     "build": "bun build ./cgtjs/index.ts --outfile dist/index.js --format esm && tsc -p tsconfig.build.json",
-    "format": "biome format --write .",
-    "lint": "biome lint .",
-    "format:check": "biome ci . --error-on-warnings",
+
+    "check:ci": "biome ci . --error-on-warnings",
+    "check:format": "biome format .",
+    "check:lint": "biome lint .",
+    "check": "biome check .",
+
+    "fix:format": "biome format --write .",
+    "fix:lint": "biome lint --write .",
+    "fix": "biome check --write .",
+
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
