@@ -71,7 +71,7 @@ export class MoveSet extends CanonicalForm {
   bypassReversibleL() {
     for (let i = 0; i < this.left.length; ++i) {
       for (const lR of this.left[i].rightMoves) {
-        if (lR.partialCompare(this) ?? Number.isNaN(0)) {
+        if ((lR.partialCompare(this) ?? NaN) <= 0) {
           const moves = [...lR.leftMoves];
           if (moves.length > 0) {
             this.left[i] = moves[0];
@@ -122,7 +122,7 @@ export class MoveSet extends CanonicalForm {
   bypassReversibleR() {
     for (let i = 0; i < this.right.length; ++i) {
       for (const rL of this.right[i].leftMoves) {
-        if (rL.partialCompare(this) ?? Number.isNaN(0)) {
+        if ((rL.partialCompare(this) ?? NaN) >= 0) {
           const moves = [...rL.rightMoves];
           if (moves.length > 0) {
             this.right[i] = moves[0];
