@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 import { DyadicRational } from '../cgtjs/DyadicRational.ts';
-import { canonicalForm } from '../cgtjs/MoveSet.ts';
+import { canonicalForm, MoveSet } from '../cgtjs/MoveSet.ts';
 import { NumberUpStar } from '../cgtjs/NumberUpStar.ts';
 
 test('NumberUpStar comparison 0 || *', () => {
@@ -21,10 +21,16 @@ test('NumberUpStar compares up & up move set with star', () => {
 });
 
 test('NumberUpStar compares up with rational move set', () => {
-  const b = canonicalForm([new NumberUpStar(new DyadicRational(11, 2))], [new NumberUpStar(new DyadicRational(1, 1))]);
+  const b = canonicalForm(
+    [new NumberUpStar(new DyadicRational(11n, 2n))],
+    [new NumberUpStar(new DyadicRational(1n, 1n))],
+  );
+  expect(b, `expected b to be { 11/4 | 1/2 } but got ${b.toString()}`).toBeInstanceOf(MoveSet);
 
-  expect(new NumberUpStar(new DyadicRational(2)).partialCompare(b)).toBe(-1);
-  expect(new NumberUpStar(new DyadicRational(2)).partialCompare(new NumberUpStar(new DyadicRational(11, 2)))).toBe(-1);
+  expect(new NumberUpStar(new DyadicRational(2n)).partialCompare(b)).toBe(null);
+  expect(new NumberUpStar(new DyadicRational(2n)).partialCompare(new NumberUpStar(new DyadicRational(11n, 2n)))).toBe(
+    -1,
+  );
 });
 
 test('[*] => 0', () => {
