@@ -18,7 +18,9 @@ export class CanonicalFormStore<G extends Game<G>> {
   private getCanonicalForm(gameId: number): CanonicalForm {
     const canonicalForm = this.canonicalFormMap.get(gameId);
     if (canonicalForm === undefined) {
-      return this.solve(this.moveStore.idToGame(gameId));
+      throw new Error(
+        `Canonical form missing for id ${gameId} but caller assumed it was ready; this is an internal error.`,
+      );
     }
     return canonicalForm;
   }
@@ -40,7 +42,9 @@ export class CanonicalFormStore<G extends Game<G>> {
     const rightCanonicalForms: CanonicalForm[] = [];
     for (const leftMoveId of leftMoveIds) {
       if (!this.canonicalFormMap.has(leftMoveId)) {
-        this.solveQueue.push(leftMoveId);
+        if (!this.solveQueue.includes(leftMoveId)) {
+          this.solveQueue.push(leftMoveId);
+        }
         break;
       }
       leftCanonicalForms.push(this.getCanonicalForm(leftMoveId));
@@ -63,7 +67,9 @@ export class CanonicalFormStore<G extends Game<G>> {
       this.canonicalFormMap.set(gameId, canonicalForm);
       return 'solved';
     } else {
-      this.solveQueue.push(gameId);
+      if (!this.solveQueue.includes(gameId)) {
+        this.solveQueue.push(gameId);
+      }
       return 'queued';
     }
   }
