@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { Blokus } from '../../cgtjs/game/Blokus';
+import { Blokus } from '../../cgtjs/game/Blokus/Blokus';
 
 const DOMINO = Blokus.fromString(`
         csc

@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { Blokus, TileState } from '../../cgtjs/game/Blokus';
+import { Blokus, TileState } from '../../cgtjs/game/Blokus/Blokus';
 
 test('set/get tile state', () => {
   const game = Blokus.empty(10n, 10n);
