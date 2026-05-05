@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { Blokus } from '../cgtjs/game/Blokus';
+import { Blokus } from '../cgtjs/game/Blokus/Blokus';
 import { uniqueBy } from '../cgtjs/utils/unique';
 
 test('uniqueBy removes duplicates from an array of strings based on identity', () => {

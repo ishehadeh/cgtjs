@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { Blokus, TileState } from '../../cgtjs/game/Blokus';
+import { Blokus, TileState } from '../../cgtjs/game/Blokus/Blokus';
 
 test("resize - tile coordiantes don't change (grow)", () => {
   const game = Blokus.empty(10n, 10n);

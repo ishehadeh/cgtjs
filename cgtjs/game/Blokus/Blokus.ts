@@ -1,4 +1,4 @@
-import { BitBoard } from '../Board.ts';
+import { BitBoard } from '../../Board.ts';
 
 export enum TileState {
   Interior = 'interior',

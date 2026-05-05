@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 import { canonicalForm, type MoveSet, NumberUpStar } from '../../cgtjs';
-import { Blokus, TileState } from '../../cgtjs/game/Blokus';
+import { Blokus, TileState } from '../../cgtjs/game/Blokus/Blokus';
 import { DOMINO } from './util/pieces';
 
 function solve(blokus: Blokus, poly: Blokus[]): NumberUpStar | MoveSet {
