@@ -2,168 +2,242 @@ import { expect, test } from 'vitest';
 import { BitBoard } from '../cgtjs/Board';
 
 test('vertical flip - 2x2 BitBoard', () => {
-  const board = new BitBoard(2n, 2n);
-  board.set(0n, 0n);
-  board.set(1n, 1n);
-  expect(board.bits).toBe(0b1001n);
+  const board = new BitBoard(2, 2);
+  board.set(0, 0);
+  board.set(1, 1);
+  expect(board.toString()).toBe(`10\n01\n`);
 
   board.flipVerticalInPlace();
 
-  expect(board.bits).toBe(0b0110n);
+  expect(board.toString()).toBe(`01\n10\n`);
 });
 
 test('vertical flip - 3x3 BitBoard', () => {
-  const board = new BitBoard(3n, 3n);
-  board.set(0n, 0n);
-  board.set(1n, 1n);
-  board.set(1n, 2n);
-  expect(board.bits).toBe(0b010_010_001n);
+  const board = new BitBoard(3, 3);
+  board.set(0, 0);
+  board.set(1, 1);
+  board.set(1, 2);
+  expect(board.toString()).toBe(`100\n010\n010\n`);
 
   board.flipVerticalInPlace();
 
-  expect(board.bits).toBe(0b001_010_010n);
+  expect(board.toString()).toBe(`010\n010\n100\n`);
 });
 
 test('vertical flip - 4x4 BitBoard', () => {
-  const board = new BitBoard(4n, 4n);
-  board.set(1n, 1n);
-  board.set(1n, 2n);
-  board.set(0n, 3n);
-  board.set(3n, 3n);
-  for (let i = 0n; i < 4n; ++i) board.set(i, 0n);
+  const board = new BitBoard(4, 4);
+  board.set(1, 1);
+  board.set(1, 2);
+  board.set(0, 3);
+  board.set(3, 3);
+  for (let i = 0; i < 4; ++i) board.set(i, 0);
 
-  expect(board.bits).toBe(0b1001_0010_0010_1111n);
+  expect(board.toString()).toBe(`1111\n0100\n0100\n1001\n`);
 
   board.flipVerticalInPlace();
 
-  expect(board.bits).toBe(0b1111_0010_0010_1001n);
+  expect(board.toString()).toBe(`1001\n0100\n0100\n1111\n`);
 });
 
 test('horizontal flip - 2x2 BitBoard', () => {
-  const board = new BitBoard(2n, 2n, 0b10_01n);
-  expect(board.bits).toBe(0b10_01n);
+  const board = BitBoard.fromString(`
+    10
+    01
+  `);
+  expect(board.toString()).toBe(`10\n01\n`);
 
   board.flipHorizontalInPlace();
-  expect(board.bits).toBe(0b01_10n);
+  expect(board.toString()).toBe(`01\n10\n`);
 });
 
 test('horizontal flip - 3x3 BitBoard', () => {
-  const board = new BitBoard(3n, 3n, 0b010_010_001n);
-  expect(board.bits).toBe(0b010_010_001n);
+  const board = BitBoard.fromString(`
+    100
+    010
+    010
+  `);
+  expect(board.toString()).toBe(`100\n010\n010\n`);
 
   board.flipHorizontalInPlace();
-  expect(board.bits).toBe(0b010_010_100n);
+  expect(board.toString()).toBe(`001\n010\n010\n`);
 });
 
 test('horizontal flip - 4x4 BitBoard', () => {
-  const board = new BitBoard(4n, 4n, 0b1001_0010_0010_1011n);
-  expect(board.bits).toBe(0b1001_0010_0010_1011n);
+  const board = BitBoard.fromString(`
+    1101
+    0100
+    1001
+    0010
+  `);
+  expect(board.toString()).toBe(`1101\n0100\n1001\n0010\n`);
 
   board.flipHorizontalInPlace();
-  expect(board.bits).toBe(0b1001_0100_0100_1101n);
+  expect(board.toString()).toBe(`1011\n0010\n1001\n0100\n`);
 });
 
 test('horizontal flip - 4x3 BitBoard, symmetric', () => {
-  const board = new BitBoard(4n, 3n, 0b1001_0000_1001n);
-  expect(board.bits).toBe(0b1001_0000_1001n);
+  const board = BitBoard.fromString(`
+    1001
+    0000
+    1001
+  `);
+  expect(board.toString()).toBe(`1001\n0000\n1001\n`);
 
   board.flipHorizontalInPlace();
-  expect(board.bits).toBe(0b1001_0000_1001n);
+  expect(board.toString()).toBe(`1001\n0000\n1001\n`);
 });
 
 test('horizontal flip - 3x4 BitBoard, symmetric', () => {
-  const board = new BitBoard(3n, 4n, 0b101_000_000_101n);
-  expect(board.bits).toBe(0b101_000_000_101n);
+  const board = BitBoard.fromString(`
+    101
+    000
+    000
+    101
+  `);
+  expect(board.toString()).toBe(`101\n000\n000\n101\n`);
 
   board.flipHorizontalInPlace();
-  expect(board.bits).toBe(0b101_000_000_101n);
+  expect(board.toString()).toBe(`101\n000\n000\n101\n`);
 });
 
 test('transpose - 2x2 BitBoard', () => {
-  const board = new BitBoard(2n, 2n, 0b10_01n);
-  expect(board.bits).toBe(0b10_01n);
+  const board = BitBoard.fromString(`
+    10
+    01
+  `);
+  expect(board.toString()).toBe(`10\n01\n`);
 
-  expect(board.transpose().bits).toBe(0b10_01n);
+  expect(board.transpose().toString()).toBe(`10\n01\n`);
 });
 
 test('transpose - 3x3 BitBoard', () => {
-  const board = new BitBoard(3n, 3n, 0b010_010_001n);
-  expect(board.bits).toBe(0b010_010_001n);
+  const board = BitBoard.fromString(`
+    100
+    010
+    010
+  `);
+  expect(board.toString()).toBe(`100\n010\n010\n`);
 
-  expect(board.transpose().bits).toBe(0b000_110_001n);
+  expect(board.transpose().toString()).toBe(`100\n011\n000\n`);
 });
 
 test('transpose - 4x4 BitBoard', () => {
-  const board = new BitBoard(4n, 4n, 0b1001_0010_0010_1011n);
-  expect(board.bits).toBe(0b1001_0010_0010_1011n);
+  const board = BitBoard.fromString(`
+    1101
+    0100
+    1001
+    0010
+  `);
+  expect(board.toString()).toBe(`1101\n0100\n1001\n0010\n`);
 
   board.flipHorizontalInPlace();
-  expect(board.bits).toBe(0b1001_0100_0100_1101n);
+  expect(board.toString()).toBe(`1011\n0010\n1001\n0100\n`);
 });
 
 test('transpose - 4x3 BitBoard (bottom row empty)', () => {
-  const board = new BitBoard(4n, 3n, 0b0100_0101_0010n);
-  expect(board.bits).toBe(0b0100_0101_0010n);
+  const board = BitBoard.fromString(`
+    0100
+    1010
+    0010
+  `);
+  expect(board.toString()).toBe(`0100\n1010\n0010\n`);
 
-  expect(board.transpose().bits).toBe(0b000_110_001_010n);
+  expect(board.transpose().toString()).toBe(`010\n100\n011\n000\n`);
 });
 
 test('transpose - 4x3 BitBoard (bottom row non-empty)', () => {
-  const board = new BitBoard(4n, 3n, 0b1100_0101_1010n);
-  expect(board.bits).toBe(0b1100_0101_1010n);
+  const board = BitBoard.fromString(`
+    0101
+    1010
+    0011
+  `);
+  expect(board.toString()).toBe(`0101\n1010\n0011\n`);
 
-  expect(board.transpose().bits).toBe(0b101_110_001_010n);
+  expect(board.transpose().toString()).toBe(`010\n100\n011\n101\n`);
 });
 
 test('rotate clockwise - 2x2 BitBoard', () => {
-  const board = new BitBoard(2n, 2n, 0b10_01n);
-  expect(board.bits).toBe(0b10_01n);
-  expect(board.rotateClockwise().bits).toBe(0b01_10n);
+  const board = BitBoard.fromString(`
+    10
+    01
+  `);
+  expect(board.toString()).toBe(`10\n01\n`);
+  expect(board.rotateClockwise().toString()).toBe(`01\n10\n`);
 
-  expect(new BitBoard(2n, 2n, 0b10_11n).rotateClockwise().bits).toBe(0b11_10n);
+  expect(
+    BitBoard.fromString(`
+      11
+      01
+    `)
+      .rotateClockwise()
+      .toString(),
+  ).toBe(`01\n11\n`);
 });
 
 test('rotate clockwise - 3x3 BitBoard', () => {
-  const board = new BitBoard(3n, 3n, 0b010_010_001n);
-  expect(board.bits).toBe(0b010_010_001n);
+  const board = BitBoard.fromString(`
+    100
+    010
+    010
+  `);
+  expect(board.toString()).toBe(`100\n010\n010\n`);
 
-  expect(board.rotateClockwise().bits).toBe(0b000_011_100n);
+  expect(board.rotateClockwise().toString()).toBe(`001\n110\n000\n`);
 });
 
 test('rotate clockwise - 4x3 BitBoard', () => {
-  const board = new BitBoard(4n, 3n, 0b0100_0101_0010n);
-  expect(board.bits).toBe(0b0100_0101_0010n);
+  const board = BitBoard.fromString(`
+    0100
+    1010
+    0010
+  `);
+  expect(board.toString()).toBe(`0100\n1010\n0010\n`);
 
-  expect(board.rotateClockwise().bits).toBe(0b000_011_100_010n);
+  expect(board.rotateClockwise().toString()).toBe(`010\n001\n110\n000\n`);
 });
 
 test('rotate clockwise - 3x3 BitBoard, symmetric', () => {
-  const board = new BitBoard(3n, 3n, 0b101_000_101n);
-  expect(board.bits).toBe(0b101_000_101n);
+  const board = BitBoard.fromString(`
+    101
+    000
+    101
+  `);
+  expect(board.toString()).toBe(`101\n000\n101\n`);
 
-  expect(board.rotateClockwise().bits).toBe(0b101_000_101n);
+  expect(board.rotateClockwise().toString()).toBe(`101\n000\n101\n`);
 });
 
 test('transpose - 3x4 BitBoard, symmetric', () => {
-  const board = new BitBoard(4n, 3n, 0b1001_0000_1001n);
-  expect(board.bits).toBe(0b1001_0000_1001n);
+  const board = BitBoard.fromString(`
+    1001
+    0000
+    1001
+  `);
+  expect(board.toString()).toBe(`1001\n0000\n1001\n`);
 
-  expect(board.transpose().bits).toBe(0b101_000_000_101n);
+  expect(board.transpose().toString()).toBe(`101\n000\n000\n101\n`);
 });
 
 test('rotate clockwise - 3x4 BitBoard, symmetric', () => {
-  const board = new BitBoard(4n, 3n, 0b1001_0000_1001n);
-  expect(board.bits).toBe(0b1001_0000_1001n);
+  const board = BitBoard.fromString(`
+    1001
+    0000
+    1001
+  `);
+  expect(board.toString()).toBe(`1001\n0000\n1001\n`);
 
-  expect(board.rotateClockwise().bits).toBe(0b101_000_000_101n);
+  expect(board.rotateClockwise().toString()).toBe(`101\n000\n000\n101\n`);
 });
 
 test('resize - 1x1 to 3x3', () => {
-  const board = new BitBoard(1n, 1n, 1n);
-  expect(board.resize(3n, 3n).bits).toBe(1n);
+  const board = BitBoard.fromString(`1`);
+  expect(board.resize(3, 3).toString()).toBe(`100\n000\n000\n`);
 });
 
 test('resize - 2x2 to 3x5, rows extend', () => {
-  const board = new BitBoard(2n, 2n, 0b10_01n);
-  expect(board.resize(3n, 5n).bits).toBe(0b010_001n);
+  const board = BitBoard.fromString(`
+    10
+    01
+  `);
+  expect(board.resize(3, 5).toString()).toBe(`100\n010\n000\n000\n000\n`);
 });

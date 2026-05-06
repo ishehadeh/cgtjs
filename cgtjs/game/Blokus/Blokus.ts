@@ -38,7 +38,7 @@ export class Blokus {
     this.#interior = interior;
   }
 
-  static empty(w: bigint, h: bigint): Blokus {
+  static empty(w: number, h: number): Blokus {
     return new Blokus(new BitBoard(w, h), new BitBoard(w, h), new BitBoard(w, h));
   }
 
@@ -47,12 +47,12 @@ export class Blokus {
       .split('\n')
       .map((r) => r.trim())
       .filter((r) => r.length !== 0);
-    const w = BigInt(Math.max(...rowsTrimmed.map((r) => r.length)));
-    const h = BigInt(rowsTrimmed.length);
+    const w = Math.max(...rowsTrimmed.map((r) => r.length));
+    const h = rowsTrimmed.length;
     const game = Blokus.empty(w, h);
-    let y = 0n;
+    let y = 0;
     for (const row of rowsTrimmed) {
-      let x = 0n;
+      let x = 0;
       for (const cell of row) {
         switch (cell) {
           case '.':
@@ -70,9 +70,9 @@ export class Blokus {
           default:
             throw TypeError('unexpected character');
         }
-        x += 1n;
+        x += 1;
       }
-      y += 1n;
+      y += 1;
     }
 
     return game;
@@ -82,16 +82,16 @@ export class Blokus {
     return (
       other.width === this.width &&
       other.height === this.height &&
-      other.#corner.bits === this.#corner.bits &&
-      other.#side.bits === this.#side.bits &&
-      other.#interior.bits === this.#interior.bits
+      other.#corner.equals(this.#corner) &&
+      other.#side.equals(this.#side) &&
+      other.#interior.equals(this.#interior)
     );
   }
 
   toStringBoard(): string {
     let boardStr = '';
-    for (let y = 0n; y < this.height; ++y) {
-      for (let x = 0n; x < this.width; ++x) {
+    for (let y = 0; y < this.height; ++y) {
+      for (let x = 0; x < this.width; ++x) {
         switch (this.get(x, y)) {
           case TileState.Side:
             boardStr += 's';
@@ -112,21 +112,21 @@ export class Blokus {
     return boardStr;
   }
 
-  get(x: bigint, y: bigint): TileState {
+  get(x: number, y: number): TileState {
     if (this.#side.get(x, y)) return TileState.Side;
     if (this.#corner.get(x, y)) return TileState.Corner;
     if (this.#interior.get(x, y)) return TileState.Interior;
     return TileState.Empty;
   }
 
-  getByIndex(i: bigint): TileState {
+  getByIndex(i: number): TileState {
     if (this.#side.getByIndex(i)) return TileState.Side;
     if (this.#corner.getByIndex(i)) return TileState.Corner;
     if (this.#interior.getByIndex(i)) return TileState.Interior;
     return TileState.Empty;
   }
 
-  set(x: bigint, y: bigint, state: TileState) {
+  set(x: number, y: number, state: TileState) {
     switch (state) {
       case TileState.Interior:
         this.#side.clear(x, y);
@@ -164,27 +164,25 @@ export class Blokus {
    * Get a string representation of the object.
    */
   toString(): string {
-    return `Blokus(${this.width}, ${this.height}, ${this.#side.bits}, ${this.#corner.bits}, ${this.#interior.bits})`;
+    return `Blokus(${this.width}, ${this.height}, [${this.#side.words.toString()}], [${this.#corner.toString()}], [${this.#interior.toString()}])`;
   }
 
   serialize(): ArrayBuffer {
     const littleEndian = false;
-    const fieldSize = (this.height * this.width + 7n) / 8n;
+    const cells = this.height * this.width;
+    const fieldSize = (cells + 7) >> 3;
 
-    // field height + width + (size of board in bytes, rounded up) * 3
-    const size = 2n + 2n + fieldSize * 3n;
-    const buffer = new ArrayBuffer(Number(size));
+    const size = 2 + 2 + fieldSize * 3;
+    const buffer = new ArrayBuffer(size);
     const dataView = new DataView(buffer);
     // first three bytes give the size of each field.
     // height and width are always 16 bit.
-    dataView.setUint16(0, Number(this.width), littleEndian); // width
-    dataView.setUint16(2, Number(this.height), littleEndian); // height
+    dataView.setUint16(0, this.width, littleEndian); // width
+    dataView.setUint16(2, this.height, littleEndian); // height
     let offset = 4;
-    for (const field of [this.#side.bits, this.#corner.bits, this.#interior.bits]) {
-      for (let byteIndex = 0n; byteIndex < fieldSize; ++byteIndex) {
-        dataView.setUint8(offset, Number((field >> (byteIndex * 8n)) & 0xffn));
-        offset += 1;
-      }
+    for (const board of [this.#side, this.#corner, this.#interior]) {
+      board.writePackedBytes(dataView, offset, fieldSize);
+      offset += fieldSize;
     }
     return buffer;
   }
@@ -192,41 +190,32 @@ export class Blokus {
   static deserialize(buffer: ArrayBufferLike): Blokus {
     const littleEndian = false;
     const dataView = new DataView(buffer);
-    const width = BigInt(dataView.getUint16(0, littleEndian));
-    const height = BigInt(dataView.getUint16(2, littleEndian));
-    const fieldSize = (height * width + 7n) / 8n;
+    const width = dataView.getUint16(0, littleEndian);
+    const height = dataView.getUint16(2, littleEndian);
+    const cells = width * height;
+    const fieldSize = (cells + 7) >> 3;
     let offset = 4;
-    const fieldBits = Number(fieldSize * 8n);
-    const fields: Record<string, bigint> = {
-      sideBits: BigInt.asUintN(fieldBits, 0n),
-      cornerBits: BigInt.asUintN(fieldBits, 0n),
-      interiorBits: BigInt.asUintN(fieldBits, 0n),
-    };
-    for (const fieldName in fields) {
-      for (let byteIndex = 0n; byteIndex < fieldSize; ++byteIndex) {
-        fields[fieldName] |= BigInt.asUintN(fieldBits, BigInt(dataView.getUint8(offset))) << (byteIndex * 8n);
-        offset += 1;
-      }
-    }
-    return new Blokus(
-      new BitBoard(width, height, fields.sideBits),
-      new BitBoard(width, height, fields.cornerBits),
-      new BitBoard(width, height, fields.interiorBits),
-    );
+    const side = BitBoard.fromPackedBytes(width, height, dataView, offset, fieldSize);
+    offset += fieldSize;
+    const corner = BitBoard.fromPackedBytes(width, height, dataView, offset, fieldSize);
+    offset += fieldSize;
+    const interior = BitBoard.fromPackedBytes(width, height, dataView, offset, fieldSize);
+    return new Blokus(side, corner, interior);
   }
 
-  countInterior(): bigint {
-    let bits = this.#interior.bits;
-    let count = 0n;
-    while (bits > 0n) {
-      count += bits & 1n;
-      bits >>= 1n;
+  countInterior(): number {
+    const cc = this.width * this.height;
+    let count = 0;
+    for (let i = 0; i < cc; i++) {
+      if (this.#interior.getByIndex(i)) {
+        count++;
+      }
     }
 
     return count;
   }
 
-  resize(w: bigint, h: bigint): Blokus {
+  resize(w: number, h: number): Blokus {
     return new Blokus(this.#side.resize(w, h), this.#corner.resize(w, h), this.#interior.resize(w, h));
   }
 
@@ -242,28 +231,32 @@ export class Blokus {
     return new Blokus(this.#side.flipVertical(), this.#corner.flipVertical(), this.#interior.flipVertical());
   }
 
-  translateInPlace(x: bigint, y: bigint) {
+  translateInPlace(x: number, y: number) {
     this.#side.translateInPlace(x, y);
     this.#corner.translateInPlace(x, y);
     this.#interior.translateInPlace(x, y);
   }
 
   assertValid() {
-    console.assert((this.#corner.bits & this.#interior.bits) === 0n);
-    console.assert((this.#corner.bits & this.#side.bits) === 0n);
-    console.assert((this.#side.bits & this.#interior.bits) === 0n);
+    const cc = this.width * this.height;
+    const wc = (cc + 31) >>> 5;
+    const rem = cc & 31;
+    const lastMask = rem === 0 ? 0xffff_ffff >>> 0 : (0xffff_ffff >>> (32 - rem)) >>> 0;
+    const side = [...this.#side.words];
+    const corner = [...this.#corner.words];
+    const interior = [...this.#interior.words];
+    for (let wi = 0; wi < wc; wi++) {
+      const mask = wi === wc - 1 ? lastMask : 0xffff_ffff >>> 0;
+      console.assert((((corner[wi] & interior[wi]) >>> 0) & mask) === 0);
+      console.assert((((corner[wi] & side[wi]) >>> 0) & mask) === 0);
+      console.assert((((side[wi] & interior[wi]) >>> 0) & mask) === 0);
+    }
   }
 
-  tryPlacePolyomino(
-    boardX: bigint,
-    boardY: bigint,
-    polyomino: Blokus,
-    polyX: bigint = 0n,
-    polyY: bigint = 0n,
-  ): boolean {
-    const changes: [bigint, bigint, TileState][] = [];
-    for (let x = 0n; x < polyomino.width; ++x) {
-      for (let y = 0n; y < polyomino.height; ++y) {
+  tryPlacePolyomino(boardX: number, boardY: number, polyomino: Blokus, polyX: number = 0, polyY: number = 0): boolean {
+    const changes: [number, number, TileState][] = [];
+    for (let x = 0; x < polyomino.width; ++x) {
+      for (let y = 0; y < polyomino.height; ++y) {
         const tileX = x + boardX - polyX;
         const tileY = y + boardY - polyY;
         const isOutOfBounds = tileX < 0 || tileY < 0 || tileX >= this.width || tileY >= this.height;
@@ -343,10 +336,10 @@ export class Blokus {
             // For each corner in the polyomino
             for (const [polyX, polyY] of currentPoly.#corner.iterSet()) {
               for (const [offsetX, offsetY] of [
-                [1n, 1n],
-                [-1n, 1n],
-                [1n, -1n],
-                [-1n, -1n],
+                [1, 1],
+                [-1, 1],
+                [1, -1],
+                [-1, -1],
               ]) {
                 const boardInteriorX = boardX + offsetX;
                 const boardInteriorY = boardY + offsetY;
@@ -354,9 +347,9 @@ export class Blokus {
                 const pieceInteriorY = polyY - offsetY;
 
                 if (
-                  boardInteriorX >= 0n &&
+                  boardInteriorX >= 0 &&
                   boardInteriorX < this.width &&
-                  boardInteriorY >= 0n &&
+                  boardInteriorY >= 0 &&
                   boardInteriorY < this.height &&
                   this.get(boardInteriorX, boardInteriorY) !== TileState.Interior
                 ) {
