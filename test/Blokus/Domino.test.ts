@@ -23,8 +23,8 @@ function solve(blokus: Blokus, poly: Blokus[]): NumberUpStar | MoveSet {
 
 test('3x9', () => {
   const domino = DOMINO.clone();
-  const board = Blokus.empty(3n, 9n);
-  board.set(0n, 0n, TileState.Corner);
+  const board = Blokus.empty(3, 9);
+  board.set(0, 0, TileState.Corner);
 
   const result = solve(board, [domino]);
   const expected = new NumberUpStar(0n, 0n, 2n);

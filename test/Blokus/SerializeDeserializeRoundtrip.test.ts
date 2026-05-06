@@ -2,8 +2,8 @@ import { expect, test } from 'vitest';
 import { Blokus, TileState } from '../../cgtjs/game/Blokus/Blokus';
 
 test('serialize and deserialzie 4x4', () => {
-  const input = Blokus.empty(2n, 2n);
-  input.set(1n, 1n, TileState.Corner);
+  const input = Blokus.empty(2, 2);
+  input.set(1, 1, TileState.Corner);
   const serialized = input.serialize();
 
   const output = Blokus.deserialize(serialized);

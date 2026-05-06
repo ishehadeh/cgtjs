@@ -1,133 +1,245 @@
+function wordCountFromCells(cells: number): number {
+  return (cells + 31) >>> 5;
+}
+
+/** Clear bits beyond `cellCount - 1` in the backing store. */
+function maskWordsToCellCount(words: Uint32Array, cellCount: number): void {
+  const wc = words.length;
+  if (wc === 0) {
+    return;
+  }
+  const rem = cellCount & 31;
+  const lastMask = rem === 0 ? 0xffff_ffff >>> 0 : (0xffff_ffff >>> (32 - rem)) >>> 0;
+  words[wc - 1] = (words[wc - 1] & lastMask) >>> 0;
+}
+
 export class BitBoard {
-  #bits: bigint;
-  #width: bigint;
-  #height: bigint;
+  #width: number;
+  #height: number;
+  #words: Uint32Array;
 
-  #maskRow: bigint = 0n;
-  #maskCol: bigint = 0n;
+  /** Bit-packed backing store (`ceil(w*h / 32)` words), row-major, bit 0 = (0,0). Extra high bits are always cleared. */
+  get words(): Readonly<Uint32Array> {
+    return this.#words;
+  }
 
-  get width(): bigint {
+  get width(): number {
     return this.#width;
   }
 
-  get height(): bigint {
+  get height(): number {
     return this.#height;
   }
 
-  get maskRow(): bigint {
-    return this.#maskRow;
+  /**
+   * Deserialize from `toString()` format: one row per line, `'0'` / `'1'`, optional outer whitespace ignored.
+   */
+  static fromString(str: string): BitBoard {
+    const rows = str
+      .split('\n')
+      .map((r) => r.trim())
+      .filter((r) => r.length !== 0);
+    if (rows.length === 0) {
+      throw new RangeError('BitBoard.fromString: empty grid');
+    }
+    const w = Math.max(...rows.map((r) => r.length));
+    const h = rows.length;
+    const bb = new BitBoard(w, h);
+    for (let y = 0; y < h; y++) {
+      const row = rows[y];
+      for (let x = 0; x < w; x++) {
+        const ch = row[x] ?? '0';
+        if (ch === '1') {
+          bb.set(x, y);
+        } else if (ch !== '0') {
+          throw new TypeError(`BitBoard.fromString: invalid character "${ch}"`);
+        }
+      }
+    }
+    return bb;
   }
 
-  get maskCol(): bigint {
-    return this.#maskCol;
+  /**
+   * Build a board from consecutive low-order bits (`bit i → cell (i % w, floor(i/w))`).
+   */
+  static fromLinearPacked(w: number, h: number, packed: number): BitBoard {
+    const bb = new BitBoard(w, h);
+    const cc = w * h;
+    for (let i = 0; i < cc; i++) {
+      if ((packed >>> i) & 1) {
+        const idx = i;
+        bb.#words[idx >>> 5] |= 1 << (idx & 31);
+      }
+    }
+    maskWordsToCellCount(bb.#words, w * h);
+    return bb;
   }
 
-  get bits(): bigint {
-    return BigInt.asUintN(Number(this.width * this.height), this.#bits);
+  /** Read contiguous bytes (`bit byteIndex*8+b` from byte’s LSB; matches `writePackedBytes` / Blokus `serialize`). */
+  static fromPackedBytes(
+    width: number,
+    height: number,
+    dataView: DataView,
+    byteOffset: number,
+    fieldSizeBytes: number,
+  ): BitBoard {
+    const bb = new BitBoard(width, height);
+    const cc = width * height;
+    let linear = 0;
+    for (let bi = 0; bi < fieldSizeBytes; bi++) {
+      const b = dataView.getUint8(byteOffset + bi);
+      for (let k = 0; k < 8 && linear < cc; k++, linear++) {
+        if ((b >>> k) & 1) {
+          bb.#words[linear >>> 5] |= 1 << (linear & 31);
+        }
+      }
+    }
+    maskWordsToCellCount(bb.#words, cc);
+    return bb;
   }
 
-  set bits(bits: bigint) {
-    this.#bits = BigInt.asUintN(Number(this.width * this.height), bits);
+  writePackedBytes(dataView: DataView, byteOffset: number, fieldSizeBytes: number): void {
+    const cc = this.#width * this.#height;
+    let linear = 0;
+    for (let bi = 0; bi < fieldSizeBytes; bi++) {
+      let byte = 0;
+      for (let k = 0; k < 8 && linear + k < cc; k++) {
+        const gi = linear + k;
+        if ((this.#words[gi >>> 5] >>> (gi & 31)) & 1) {
+          byte |= 1 << k;
+        }
+      }
+      linear += 8;
+      dataView.setUint8(byteOffset + bi, byte);
+    }
   }
 
-  constructor(w: bigint, h: bigint, bits: bigint = 0n) {
+  constructor(w: number, h: number, initialWords?: Uint32Array) {
     this.#width = w;
     this.#height = h;
-    this.#bits = BigInt.asUintN(Number(w * h), bits);
-    this.#maskCol = BigInt.asUintN(Number(w * h), 0n);
-    this.#maskRow = BigInt.asUintN(Number(w * h), 0n);
-
-    for (let i = 0n; i < this.width; ++i) {
-      this.#maskRow |= 1n << i;
+    const cc = w * h;
+    const wc = wordCountFromCells(cc);
+    this.#words = new Uint32Array(wc);
+    if (initialWords !== undefined) {
+      if (initialWords.length !== wc) {
+        throw new RangeError(`expected ${wc} words, got ${initialWords.length}`);
+      }
+      this.#words.set(initialWords);
     }
-
-    for (let i = 0n; i < this.height; ++i) {
-      this.#maskCol |= 1n << (i * this.width);
-    }
+    maskWordsToCellCount(this.#words, cc);
   }
 
-  resize(w: bigint, h: bigint): BitBoard {
-    const newBoard = new BitBoard(w, h);
-
-    // use the smaller row mask so it doesn't overflow on either board
-    const rowMask = this.width < w ? this.maskRow : newBoard.maskRow;
-
-    // copy the smaller number of rows so it doesn't overflow either board's height
-    const copyHeight = this.height > h ? h : this.height;
-
-    for (let i = 0n; i < copyHeight; ++i) {
-      newBoard.#bits |= ((this.#bits & (rowMask << (i * this.width))) >> (i * this.width)) << (i * w);
+  equals(other: BitBoard): boolean {
+    if (this.#width !== other.#width || this.#height !== other.#height) {
+      return false;
     }
+    const cc = this.#width * this.#height;
+    const wc = this.#words.length;
+    const rem = cc & 31;
+    const lastMask = rem === 0 ? 0xffff_ffff >>> 0 : (0xffff_ffff >>> (32 - rem)) >>> 0;
+    for (let wi = 0; wi < wc; wi++) {
+      let a = this.#words[wi] >>> 0;
+      let b = other.#words[wi] >>> 0;
+      if (wi === wc - 1) {
+        a &= lastMask;
+        b &= lastMask;
+      }
+      if (a !== b) {
+        return false;
+      }
+    }
+    return true;
+  }
 
-    return newBoard;
+  resize(w: number, h: number): BitBoard {
+    const nb = new BitBoard(w, h);
+    const copyH = Math.min(this.#height, h);
+    const copyW = Math.min(this.#width, w);
+    for (let y = 0; y < copyH; y++) {
+      for (let x = 0; x < copyW; x++) {
+        if (this.get(x, y)) {
+          nb.set(x, y);
+        }
+      }
+    }
+    return nb;
   }
 
   clone(): BitBoard {
-    return new BitBoard(this.width, this.height, this.bits);
+    return new BitBoard(this.#width, this.#height, new Uint32Array(this.#words));
   }
 
-  translateInPlace(x: bigint, y: bigint) {
-    // TODO: optimize
-    while (x < 0) {
-      this.#bits &= ~this.maskCol;
-      this.#bits >>= 1n;
-      x += 1n;
-    }
-    while (x > 0) {
-      this.#bits &= ~(this.maskCol << (this.width - 1n));
-      this.#bits <<= 1n;
-      x -= 1n;
-    }
-
-    while (y < 0) {
-      this.#bits >>= this.width;
-      y += 1n;
-    }
-    while (y > 0) {
-      this.#bits &= ~(this.maskRow << ((this.height - 1n) * this.width));
-      this.#bits <<= this.height;
-      y -= 1n;
+  translateInPlace(x: number, y: number): void {
+    const src = this.clone();
+    this.#clearAll();
+    const w = this.#width;
+    const h = this.#height;
+    const cc = w * h;
+    for (let i = 0; i < cc; i++) {
+      if (!src.getByIndex(i)) {
+        continue;
+      }
+      const cx = i % w;
+      const cy = (i / w) | 0;
+      const tx = cx + x;
+      const ty = cy + y;
+      if (tx >= 0 && tx < w && ty >= 0 && ty < h) {
+        this.set(tx, ty);
+      }
     }
   }
 
-  translate(x: bigint, y: bigint): BitBoard {
-    const tr = new BitBoard(this.width, this.height, this.bits);
+  translate(x: number, y: number): BitBoard {
+    const tr = this.clone();
     tr.translateInPlace(x, y);
     return tr;
   }
 
-  get(x: bigint, y: bigint): boolean {
-    return (this.#bits & (1n << (y * this.width + x))) > 0;
+  get(x: number, y: number): boolean {
+    const i = y * this.#width + x;
+    return ((this.#words[i >>> 5] >>> (i & 31)) & 1) !== 0;
   }
 
-  getByIndex(i: bigint): boolean {
-    return (this.#bits & (1n << i)) > 0;
+  getByIndex(i: number): boolean {
+    return ((this.#words[i >>> 5] >>> (i & 31)) & 1) !== 0;
   }
 
-  set(x: bigint, y: bigint) {
-    this.#bits |= 1n << (y * this.width + x);
+  set(x: number, y: number): void {
+    const i = y * this.#width + x;
+    this.#words[i >>> 5] |= 1 << (i & 31);
   }
 
-  clear(x: bigint, y: bigint) {
-    this.#bits &= ~(1n << (y * this.width + x));
+  clear(x: number, y: number): void {
+    const i = y * this.#width + x;
+    this.#words[i >>> 5] &= ~(1 << (i & 31));
   }
 
-  flipVerticalInPlace() {
-    let newBits = BigInt.asUintN(Number(this.width * this.height), 0n);
-    for (let i = 0n; i < this.height; ++i) {
-      const rowTopOffset = i * this.width;
-      const rowBottomOffset = (this.height - i - 1n) * this.width;
-      newBits |= (this.maskRow & (this.#bits >> rowTopOffset)) << rowBottomOffset;
-      newBits |= (this.maskRow & (this.#bits >> rowBottomOffset)) << rowTopOffset;
+  flipVerticalInPlace(): void {
+    const h = this.#height;
+    const mid = Math.floor(h / 2);
+    const w = this.#width;
+    for (let y = 0; y < mid; y++) {
+      const yb = h - 1 - y;
+      for (let x = 0; x < w; x++) {
+        const a = this.get(x, y);
+        const b = this.get(x, yb);
+        if (a !== b) {
+          if (a) {
+            this.set(x, yb);
+            this.clear(x, y);
+          } else {
+            this.set(x, y);
+            this.clear(x, yb);
+          }
+        }
+      }
     }
-    this.#bits = newBits;
   }
 
   transpose(): BitBoard {
-    // FIXME: optimize
-    const newBoard = new BitBoard(this.height, this.width);
-    for (let x = 0n; x < this.width; ++x) {
-      for (let y = 0n; y < this.height; ++y) {
+    const newBoard = new BitBoard(this.#height, this.#width);
+    for (let x = 0; x < this.#width; x++) {
+      for (let y = 0; y < this.#height; y++) {
         if (this.get(x, y)) {
           newBoard.set(y, x);
         }
@@ -136,15 +248,24 @@ export class BitBoard {
     return newBoard;
   }
 
-  flipHorizontalInPlace() {
-    let newBits = BigInt.asUintN(Number(this.width * this.height), 0n);
-    for (let i = 0n; i < (this.width + 1n) / 2n; ++i) {
-      const colLeftOffset = i;
-      const colRightOffset = this.width - i - 1n;
-      newBits |= (this.maskCol & (this.#bits >> colLeftOffset)) << colRightOffset;
-      newBits |= (this.maskCol & (this.#bits >> colRightOffset)) << colLeftOffset;
+  flipHorizontalInPlace(): void {
+    const w = this.#width;
+    const h = this.#height;
+    for (let y = 0; y < h; y++) {
+      for (let xl = 0, xr = w - 1; xl < xr; xl++, xr--) {
+        const a = this.get(xl, y);
+        const b = this.get(xr, y);
+        if (a !== b) {
+          if (a) {
+            this.set(xr, y);
+            this.clear(xl, y);
+          } else {
+            this.set(xl, y);
+            this.clear(xr, y);
+          }
+        }
+      }
     }
-    this.#bits = newBits;
   }
 
   flipHorizontal(): BitBoard {
@@ -161,8 +282,8 @@ export class BitBoard {
 
   toString(): string {
     let str = '';
-    for (let y = 0n; y < this.height; ++y) {
-      for (let x = 0n; x < this.width; ++x) {
+    for (let y = 0; y < this.#height; y++) {
+      for (let x = 0; x < this.#width; x++) {
         str += this.get(x, y) ? '1' : '0';
       }
       str += '\n';
@@ -181,25 +302,39 @@ export class BitBoard {
    *
    * @returns a generator that yields the x and y coordinates of the cells that are "true", in the form [x, y]
    */
-  *iterSet(): Generator<[bigint, bigint], void> {
-    for (let i = 0n; i < this.width * this.height; ++i) {
-      if ((this.#bits & (1n << i)) > 0n) {
-        yield [i % this.width, i / this.width];
+  *iterSet(): Generator<[number, number], void> {
+    const cc = this.#width * this.#height;
+    const w = this.#width;
+    for (let i = 0; i < cc; i++) {
+      if ((this.#words[i >>> 5] >>> (i & 31)) & 1) {
+        yield [i % w, (i / w) | 0];
       }
     }
   }
 
-  *iterClear(): Generator<[bigint, bigint], void> {
-    for (let i = 0n; i < this.width * this.height; ++i) {
-      if ((this.#bits & (1n << i)) === 0n) {
-        yield [i % this.width, i / this.width];
+  *iterClear(): Generator<[number, number], void> {
+    const cc = this.#width * this.#height;
+    const w = this.#width;
+    for (let i = 0; i < cc; i++) {
+      if (((this.#words[i >>> 5] >>> (i & 31)) & 1) === 0) {
+        yield [i % w, (i / w) | 0];
       }
     }
+  }
+
+  #clearAll(): void {
+    this.#words.fill(0);
   }
 }
 
-export function deltaSwap(board: bigint, mask: bigint, delta: bigint) {
-  // more detail: https://reflectionsonsecurity.wordpress.com/2014/05/11/efficient-bit-permutation-using-delta-swaps/
-  const x = (board ^ (board >> delta)) & mask;
-  return board ^ (x << delta) ^ x;
+/**
+ * Efficient bit permutation using delta swaps (`board`, `mask`, `delta` are treated as unsigned 32-bit values).
+ *
+ * More detail:
+ * https://reflectionsonsecurity.wordpress.com/2014/05/11/efficient-bit-permutation-using-delta-swaps/
+ */
+export function deltaSwap(board: number, mask: number, delta: number): number {
+  const x = ((((board >>> delta) >>> 0) ^ (board >>> 0)) >>> 0) & (mask >>> 0);
+  const shifted = (x << delta) >>> 0;
+  return ((board >>> 0) ^ shifted ^ x) >>> 0;
 }

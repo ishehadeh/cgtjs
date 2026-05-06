@@ -2,9 +2,9 @@ import { expect, test } from 'vitest';
 import { Blokus, TileState } from '../../cgtjs/game/Blokus/Blokus';
 
 test('set/get tile state', () => {
-  const game = Blokus.empty(10n, 10n);
-  game.set(3n, 3n, TileState.Corner);
-  expect(game.get(3n, 3n)).toBe(TileState.Corner);
+  const game = Blokus.empty(10, 10);
+  game.set(3, 3, TileState.Corner);
+  expect(game.get(3, 3)).toBe(TileState.Corner);
 });
 
 test('corners, sides, and interiors getters match get() for each cell', () => {
@@ -17,8 +17,8 @@ test('corners, sides, and interiors getters match get() for each cell', () => {
     `);
 
   // check that the corners, sides, and interiors getters match the get() method for each cell
-  for (let y = 0n; y < game.height; y += 1n) {
-    for (let x = 0n; x < game.width; x += 1n) {
+  for (let y = 0; y < game.height; y += 1) {
+    for (let x = 0; x < game.width; x += 1) {
       const state = game.get(x, y);
       expect(game.corners.get(x, y)).toBe(state === TileState.Corner);
       expect(game.sides.get(x, y)).toBe(state === TileState.Side);

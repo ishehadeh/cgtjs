@@ -8,8 +8,8 @@ const DOMINO = Blokus.fromString(`
         csc`);
 
 test('place a domino in empty 8x8', () => {
-  const game = Blokus.empty(8n, 8n);
-  expect(game.tryPlacePolyomino(0n, 0n, DOMINO, 0n, 0n)).toBe(true);
+  const game = Blokus.empty(8, 8);
+  expect(game.tryPlacePolyomino(0, 0, DOMINO, 0, 0)).toBe(true);
   expect(
     game.isEqualTo(
       Blokus.fromString(
@@ -28,9 +28,9 @@ test('place a domino in empty 8x8', () => {
 });
 
 test('overlap interiors are not allowed', () => {
-  const game = Blokus.empty(8n, 8n);
-  expect(game.tryPlacePolyomino(0n, 0n, DOMINO, 0n, 0n)).toBe(true);
-  expect(game.tryPlacePolyomino(0n, 1n, DOMINO, 0n, 0n)).toBe(false);
+  const game = Blokus.empty(8, 8);
+  expect(game.tryPlacePolyomino(0, 0, DOMINO, 0, 0)).toBe(true);
+  expect(game.tryPlacePolyomino(0, 1, DOMINO, 0, 0)).toBe(false);
 
   expect(
     game.isEqualTo(
@@ -50,9 +50,9 @@ test('overlap interiors are not allowed', () => {
 });
 
 test('domino placed on corner is allowed', () => {
-  const game = Blokus.empty(8n, 8n);
-  expect(game.tryPlacePolyomino(0n, 0n, DOMINO, 0n, 0n)).toBe(true);
-  expect(game.tryPlacePolyomino(2n, 3n, DOMINO, 1n, 1n)).toBe(true);
+  const game = Blokus.empty(8, 8);
+  expect(game.tryPlacePolyomino(0, 0, DOMINO, 0, 0)).toBe(true);
+  expect(game.tryPlacePolyomino(2, 3, DOMINO, 1, 1)).toBe(true);
 
   expect(
     game.isEqualTo(
@@ -72,9 +72,9 @@ test('domino placed on corner is allowed', () => {
 });
 
 test('domino placed on corner, rotate', () => {
-  const game = Blokus.empty(8n, 8n);
-  expect(game.tryPlacePolyomino(0n, 0n, DOMINO, 1n, 1n)).toBe(true);
-  expect(game.tryPlacePolyomino(1n, 2n, DOMINO.rotateClockwise(), 1n, 1n)).toBe(true);
+  const game = Blokus.empty(8, 8);
+  expect(game.tryPlacePolyomino(0, 0, DOMINO, 1, 1)).toBe(true);
+  expect(game.tryPlacePolyomino(1, 2, DOMINO.rotateClockwise(), 1, 1)).toBe(true);
 
   expect(
     game.isEqualTo(
@@ -95,11 +95,11 @@ test('domino placed on corner, rotate', () => {
 });
 
 test('domino placed with overflowing side', () => {
-  const game = Blokus.empty(8n, 8n);
-  expect(game.tryPlacePolyomino(0n, 0n, DOMINO, 1n, 1n)).toBe(true);
-  expect(game.tryPlacePolyomino(7n, 6n, DOMINO, 1n, 1n)).toBe(true);
-  expect(game.tryPlacePolyomino(0n, 6n, DOMINO, 1n, 1n)).toBe(true);
-  expect(game.tryPlacePolyomino(7n, 0n, DOMINO, 1n, 1n)).toBe(true);
+  const game = Blokus.empty(8, 8);
+  expect(game.tryPlacePolyomino(0, 0, DOMINO, 1, 1)).toBe(true);
+  expect(game.tryPlacePolyomino(7, 6, DOMINO, 1, 1)).toBe(true);
+  expect(game.tryPlacePolyomino(0, 6, DOMINO, 1, 1)).toBe(true);
+  expect(game.tryPlacePolyomino(7, 0, DOMINO, 1, 1)).toBe(true);
 
   expect(
     game.isEqualTo(
