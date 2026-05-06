@@ -325,6 +325,14 @@ export class BitBoard {
   #clearAll(): void {
     this.#words.fill(0);
   }
+
+  toBase64(): string {
+    const buffer = new Uint32Array(this.#words.length + 2);
+    buffer[0] = this.#width;
+    buffer[1] = this.#height;
+    buffer.set(this.#words, 2);
+    return btoa(String.fromCharCode(...new Uint8Array(buffer.buffer)));
+  }
 }
 
 /**
