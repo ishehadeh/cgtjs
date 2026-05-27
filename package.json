@@ -8,7 +8,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "rm -rf dist && mkdir -p dist && ./node_modules/.bin/bun build ./cgtjs/index.ts --outfile dist/index.js --format esm && dts-bundle-generator -o dist/index.d.ts --project tsconfig.build.json --no-banner cgtjs/index.ts",
+    "build": "rm -rf dist && mkdir -p dist && bun build ./cgtjs/index.ts --outfile dist/index.js --format esm && dts-bundle-generator -o dist/index.d.ts --project tsconfig.build.json --no-banner cgtjs/index.ts",
 
     "check:ci": "biome ci . --error-on-warnings",
     "check:format": "biome format .",
@@ -23,7 +23,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
 
-    "prepare": "./node_modules/.bin/bun run build",
+    "prepare": "bun run build"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.9",
