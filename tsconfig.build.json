@@ -1,11 +1,8 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "noEmit": false,
+    "noEmit": true,
     "declaration": true,
-    "declarationMap": true,
-    "emitDeclarationOnly": true,
-    "outDir": "dist",
     "rootDir": "cgtjs",
     "rewriteRelativeImportExtensions": true
   },
