@@ -23,7 +23,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
 
-    "prepare": "bun run build"
+    "install": "bun run build"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.9",
