@@ -1,11 +1,11 @@
 {
   "name": "cgtjs",
-  "module": "cgtjs/index.ts",
-  "types": "cgtjs/index.ts",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
   "type": "module",
   "version": "0.1.0",
   "files": [
-    "cgtjs"
+    "dist"
   ],
   "scripts": {
     "build": "bun build ./cgtjs/index.ts --outfile dist/index.js --format esm && tsc -p tsconfig.build.json",
@@ -21,7 +21,9 @@
 
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+
+    "prepare": "bun build ./cgtjs/index.ts --outfile dist/index.js --format esm && tsc -p tsconfig.build.json"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.9",
