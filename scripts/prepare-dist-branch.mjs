@@ -9,12 +9,12 @@ const distDir = join(root, 'dist');
 const requiredArtifacts = [
   'index.js',
   'index.d.ts',
-  'game.js',
-  'game.d.ts',
-  'solver.js',
-  'solver.d.ts',
-  'utils.js',
-  'utils.d.ts',
+  'game/index.js',
+  'game/index.d.ts',
+  'solver/index.js',
+  'solver/index.d.ts',
+  'utils/index.js',
+  'utils/index.d.ts',
 ];
 
 for (const artifact of requiredArtifacts) {
@@ -28,14 +28,26 @@ for (const artifact of requiredArtifacts) {
 
 const sourcePackage = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
 
+function toDistExport(entry) {
+  return {
+    types: entry.types.replace(/^\.\/cgtjs\//, './dist/').replace(/\.ts$/, '.d.ts'),
+    import: entry.import.replace(/^\.\/cgtjs\//, './dist/').replace(/\.ts$/, '.js'),
+    default: entry.default.replace(/^\.\/cgtjs\//, './dist/').replace(/\.ts$/, '.js'),
+  };
+}
+
+const publishExports = Object.fromEntries(
+  Object.entries(sourcePackage.exports).map(([key, entry]) => [key, toDistExport(entry)]),
+);
+
 const publishPackage = {
   name: sourcePackage.name,
   version: sourcePackage.version,
   type: sourcePackage.type,
-  module: sourcePackage.module,
-  types: sourcePackage.types,
-  files: sourcePackage.files,
-  exports: sourcePackage.exports,
+  module: 'dist/index.js',
+  types: 'dist/index.d.ts',
+  files: ['dist'],
+  exports: publishExports,
   private: false,
   repository: {
     type: 'git',

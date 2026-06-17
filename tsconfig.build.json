@@ -4,6 +4,7 @@
     "noEmit": true,
     "declaration": true,
     "rootDir": "cgtjs",
+    "outDir": "dist",
     "rewriteRelativeImportExtensions": true
   },
   "include": ["cgtjs/**/*.ts"]
