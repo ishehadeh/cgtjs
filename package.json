@@ -7,8 +7,30 @@
   "files": [
     "dist"
   ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./game": {
+      "types": "./dist/game.d.ts",
+      "import": "./dist/game.js",
+      "default": "./dist/game.js"
+    },
+    "./solver": {
+      "types": "./dist/solver.d.ts",
+      "import": "./dist/solver.js",
+      "default": "./dist/solver.js"
+    },
+    "./utils": {
+      "types": "./dist/utils.d.ts",
+      "import": "./dist/utils.js",
+      "default": "./dist/utils.js"
+    }
+  },
   "scripts": {
-    "build": "rm -rf dist && mkdir -p dist && bun build ./cgtjs/index.ts --outfile dist/index.js --format esm && dts-bundle-generator -o dist/index.d.ts --project tsconfig.build.json --no-banner cgtjs/index.ts",
+    "build": "rm -rf dist && mkdir -p dist && esbuild cgtjs/index.ts --bundle --format=esm --platform=neutral --outfile=dist/index.js && esbuild cgtjs/game/index.ts --bundle --format=esm --platform=neutral --outfile=dist/game.js && esbuild cgtjs/solver/index.ts --bundle --format=esm --platform=neutral --outfile=dist/solver.js && esbuild cgtjs/utils/index.ts --bundle --format=esm --platform=neutral --outfile=dist/utils.js && dts-bundle-generator -o dist/index.d.ts --project tsconfig.build.json --no-banner cgtjs/index.ts && dts-bundle-generator -o dist/game.d.ts --project tsconfig.build.json --no-banner cgtjs/game/index.ts && dts-bundle-generator -o dist/solver.d.ts --project tsconfig.build.json --no-banner cgtjs/solver/index.ts && dts-bundle-generator -o dist/utils.d.ts --project tsconfig.build.json --no-banner cgtjs/utils/index.ts",
 
     "check:ci": "biome ci . --error-on-warnings",
     "check:format": "biome format .",
@@ -29,6 +51,7 @@
     "@biomejs/biome": "^2.4.9",
     "@vitest/coverage-v8": "^3.2.4",
     "dts-bundle-generator": "^9.5.1",
+    "esbuild": "^0.25.0",
     "fast-check": "^4.0.0",
     "typescript": "^5.7.0",
     "vitest": "^3.2.4",

@@ -6,7 +6,16 @@ import { fileURLToPath } from 'node:url';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const publishDir = join(root, '.publish');
 const distDir = join(root, 'dist');
-const requiredArtifacts = ['index.js', 'index.d.ts'];
+const requiredArtifacts = [
+  'index.js',
+  'index.d.ts',
+  'game.js',
+  'game.d.ts',
+  'solver.js',
+  'solver.d.ts',
+  'utils.js',
+  'utils.d.ts',
+];
 
 for (const artifact of requiredArtifacts) {
   const path = join(distDir, artifact);
@@ -26,6 +35,7 @@ const publishPackage = {
   module: sourcePackage.module,
   types: sourcePackage.types,
   files: sourcePackage.files,
+  exports: sourcePackage.exports,
   private: false,
   repository: {
     type: 'git',
