@@ -1,36 +1,37 @@
 {
   "name": "cgtjs",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "module": "cgtjs/index.ts",
+  "types": "cgtjs/index.ts",
   "type": "module",
   "version": "0.1.0",
   "files": [
+    "cgtjs",
     "dist"
   ],
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "default": "./dist/index.js"
+      "types": "./cgtjs/index.ts",
+      "import": "./cgtjs/index.ts",
+      "default": "./cgtjs/index.ts"
     },
     "./game": {
-      "types": "./dist/game.d.ts",
-      "import": "./dist/game.js",
-      "default": "./dist/game.js"
+      "types": "./cgtjs/game/index.ts",
+      "import": "./cgtjs/game/index.ts",
+      "default": "./cgtjs/game/index.ts"
     },
     "./solver": {
-      "types": "./dist/solver.d.ts",
-      "import": "./dist/solver.js",
-      "default": "./dist/solver.js"
+      "types": "./cgtjs/solver/index.ts",
+      "import": "./cgtjs/solver/index.ts",
+      "default": "./cgtjs/solver/index.ts"
     },
     "./utils": {
-      "types": "./dist/utils.d.ts",
-      "import": "./dist/utils.js",
-      "default": "./dist/utils.js"
+      "types": "./cgtjs/utils/index.ts",
+      "import": "./cgtjs/utils/index.ts",
+      "default": "./cgtjs/utils/index.ts"
     }
   },
   "scripts": {
-    "build": "rm -rf dist && mkdir -p dist && esbuild cgtjs/index.ts --bundle --format=esm --platform=neutral --outfile=dist/index.js && esbuild cgtjs/game/index.ts --bundle --format=esm --platform=neutral --outfile=dist/game.js && esbuild cgtjs/solver/index.ts --bundle --format=esm --platform=neutral --outfile=dist/solver.js && esbuild cgtjs/utils/index.ts --bundle --format=esm --platform=neutral --outfile=dist/utils.js && dts-bundle-generator -o dist/index.d.ts --project tsconfig.build.json --no-banner cgtjs/index.ts && dts-bundle-generator -o dist/game.d.ts --project tsconfig.build.json --no-banner cgtjs/game/index.ts && dts-bundle-generator -o dist/solver.d.ts --project tsconfig.build.json --no-banner cgtjs/solver/index.ts && dts-bundle-generator -o dist/utils.d.ts --project tsconfig.build.json --no-banner cgtjs/utils/index.ts",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json --noEmit false",
 
     "check:ci": "biome ci . --error-on-warnings",
     "check:format": "biome format .",
@@ -50,8 +51,6 @@
   "devDependencies": {
     "@biomejs/biome": "^2.4.9",
     "@vitest/coverage-v8": "^3.2.4",
-    "dts-bundle-generator": "^9.5.1",
-    "esbuild": "^0.25.0",
     "fast-check": "^4.0.0",
     "typescript": "^5.7.0",
     "vitest": "^3.2.4",
