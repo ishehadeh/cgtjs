@@ -23,7 +23,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
 
-    "postinstall": "bun run build"
+    "prepare:dist-branch": "bun run build && node scripts/prepare-dist-branch.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.9",
