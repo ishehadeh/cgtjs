@@ -1,5 +1,5 @@
-import type { Ordering } from './compare';
-import { PartialOrder } from './PartialOrder';
+import type { Ordering } from './compare.ts';
+import { PartialOrder } from './PartialOrder.ts';
 
 export class Order extends PartialOrder {
   /** Returns -1 if `this < rhs`, 1 if `this > rhs` or 0 if `this == rhs`.
