@@ -1,4 +1,4 @@
-import type { Game } from './Game';
+import type { Game } from './Game.ts';
 
 export class MoveStore<G extends Game<G>> {
   /**

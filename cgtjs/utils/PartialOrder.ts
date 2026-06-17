@@ -1,4 +1,4 @@
-import type { Ordering } from './compare';
+import type { Ordering } from './compare.ts';
 
 /** Marks child classes as partially (optionally) comparable
  */

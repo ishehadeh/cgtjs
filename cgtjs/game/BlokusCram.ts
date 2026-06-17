@@ -1,5 +1,5 @@
-import type { BitBoard } from '../Board';
-import type { Game } from '../solver/Game';
+import type { BitBoard } from '../Board.ts';
+import type { Game } from '../solver/Game.ts';
 
 /**
  * Impartial Blokus, where players can place any of the given polyominos anywhere on the board.
