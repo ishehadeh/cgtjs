@@ -6,11 +6,19 @@ import type { Game } from '../solver/Game.ts';
  */
 export class BlokusCram implements Game<BlokusCram> {
   #board: BitBoard;
+  #blocked: BitBoard | null;
   #polyominos: BitBoard[];
 
-  constructor(board: BitBoard, polyominos: BitBoard[]) {
+  /**
+   *
+   * @param board Current set of spaces where polyominos have been placed. A 1 bit indicates a space that is already occupied.
+   * @param blocked A board of spaces that can't be played, useful for oddly shaped or non-rectangular boards. If null, the board is assumed to be rectangular and unblocked.
+   * @param polyominos
+   */
+  constructor(board: BitBoard, polyominos: BitBoard[], blocked: BitBoard | null = null) {
     this.#board = board;
     this.#polyominos = polyominos;
+    this.#blocked = blocked;
   }
 
   get polyominos(): Readonly<BitBoard[]> {
@@ -21,6 +29,10 @@ export class BlokusCram implements Game<BlokusCram> {
     return this.#board;
   }
 
+  get blocked(): Readonly<BitBoard> | null {
+    return this.#blocked;
+  }
+
   public canPlacePolyomino(polyomino: BitBoard, x: number, y: number): boolean {
     for (const [polyX, polyY] of polyomino.iterSet()) {
       const adjustedX = x + polyX;
@@ -28,9 +40,12 @@ export class BlokusCram implements Game<BlokusCram> {
       if (adjustedX < 0 || adjustedY < 0 || adjustedX >= this.#board.width || adjustedY >= this.#board.height) {
         return false;
       }
-      if (this.#board.get(adjustedX, adjustedY)) {
+
+      // if this space is already occupied, or if it's blocked, we can't place the polyomino here
+      if (this.#board.get(adjustedX, adjustedY) || this.#blocked?.get(adjustedX, adjustedY)) {
         return false;
       }
+
       const SIDE_MATRIX = [
         [1, 0],
         [0, 1],
@@ -70,7 +85,7 @@ export class BlokusCram implements Game<BlokusCram> {
     for (const polyomino of this.#polyominos) {
       for (const [boardX, boardY] of this.#board.iterClear()) {
         if (this.canPlacePolyomino(polyomino, boardX, boardY)) {
-          const game = new BlokusCram(this.#board.clone(), this.#polyominos);
+          const game = new BlokusCram(this.#board.clone(), this.#polyominos, this.#blocked);
           game.mustPlacePolyomino(polyomino, boardX, boardY);
           yield game;
         }
