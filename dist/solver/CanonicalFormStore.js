@@ -1,0 +1,80 @@
+import { MoveSet } from "../MoveSet.js";
+import { MoveStore } from "./MoveStore.js";
+export class CanonicalFormStore {
+    /**
+     * A map of game id -> canonical form, for faster look up of canonical forms.
+     */
+    canonicalFormMap = new Map();
+    solveQueue = [];
+    moveStore;
+    constructor(moveStore) {
+        this.moveStore = moveStore ?? new MoveStore();
+    }
+    getCanonicalForm(gameId) {
+        const canonicalForm = this.canonicalFormMap.get(gameId);
+        if (canonicalForm === undefined) {
+            throw new Error(`Canonical form missing for id ${gameId} but caller assumed it was ready; this is an internal error.`);
+        }
+        return canonicalForm;
+    }
+    /**
+     * Solve the next game in the queue.
+     * Returns true if a game was solved, false if the queue is empty.
+     */
+    solveNext() {
+        const gameId = this.solveQueue.shift();
+        if (gameId === undefined) {
+            return 'empty';
+        }
+        const leftMoveIds = this.moveStore.getLeftMoveIds(gameId);
+        const rightMoveIds = this.moveStore.getRightMoveIds(gameId);
+        const leftCanonicalForms = [];
+        const rightCanonicalForms = [];
+        for (const leftMoveId of leftMoveIds) {
+            if (!this.canonicalFormMap.has(leftMoveId)) {
+                if (!this.solveQueue.includes(leftMoveId)) {
+                    this.solveQueue.push(leftMoveId);
+                }
+                break;
+            }
+            leftCanonicalForms.push(this.getCanonicalForm(leftMoveId));
+        }
+        for (const rightMoveId of rightMoveIds) {
+            if (!this.canonicalFormMap.has(rightMoveId)) {
+                if (!this.solveQueue.includes(rightMoveId)) {
+                    this.solveQueue.push(rightMoveId);
+                }
+                break;
+            }
+            rightCanonicalForms.push(this.getCanonicalForm(rightMoveId));
+        }
+        const allSolved = leftCanonicalForms.length === leftMoveIds.length && rightCanonicalForms.length === rightMoveIds.length;
+        if (allSolved) {
+            const moveSet = new MoveSet(leftCanonicalForms, rightCanonicalForms);
+            const canonicalForm = moveSet.normalize();
+            this.canonicalFormMap.set(gameId, canonicalForm);
+            return 'solved';
+        }
+        else {
+            if (!this.solveQueue.includes(gameId)) {
+                this.solveQueue.push(gameId);
+            }
+            return 'queued';
+        }
+    }
+    solve(game) {
+        const gameId = this.moveStore.getGameId(game);
+        this.solveQueue = [gameId];
+        while (true) {
+            const result = this.solveNext();
+            if (result === 'empty') {
+                break;
+            }
+        }
+        const canonicalForm = this.canonicalFormMap.get(gameId);
+        if (canonicalForm === undefined) {
+            throw new Error(`Canonical form not found for game id ${gameId}, even after solving. This is a bug.`);
+        }
+        return canonicalForm;
+    }
+}

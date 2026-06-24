@@ -1,0 +1,40 @@
+{
+  "name": "cgtjs",
+  "version": "0.1.0",
+  "type": "module",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./game": {
+      "types": "./dist/game/index.d.ts",
+      "import": "./dist/game/index.js",
+      "default": "./dist/game/index.js"
+    },
+    "./solver": {
+      "types": "./dist/solver/index.d.ts",
+      "import": "./dist/solver/index.js",
+      "default": "./dist/solver/index.js"
+    },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "import": "./dist/utils/index.js",
+      "default": "./dist/utils/index.js"
+    }
+  },
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ishehadeh/cgtjs.git"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
