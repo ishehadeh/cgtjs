@@ -102,7 +102,11 @@ export class BlokusCram implements Game<BlokusCram> {
   }
 
   public hash(): string {
-    return `${this.#board.toBase64()},${this.#polyominos.map((polyomino) => polyomino.toBase64()).join(',')}`;
+    return (
+      `${this.#board.toBase64()},` +
+      `${this.#polyominos.map((polyomino) => polyomino.toBase64()).join(',')},` +
+      `${this.#blocked?.toBase64() ?? ''}`
+    );
   }
 
   public toString(): string {

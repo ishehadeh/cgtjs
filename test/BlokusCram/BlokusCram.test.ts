@@ -1,6 +1,7 @@
 import { expect, test } from 'vitest';
 import { BitBoard } from '../../cgtjs/Board';
 import { BlokusCram } from '../../cgtjs/game/BlokusCram';
+import { MoveStore } from '../../cgtjs/solver/MoveStore';
 
 const DOMINO = BitBoard.fromString(`11`);
 const DOMINO_V = BitBoard.fromString(`1
@@ -80,4 +81,35 @@ test('moves - blocked spaces stay blocked in child positions', () => {
   }
   expect(firstMove.blocked?.toString()).toBe(blocked.toString());
   expect([...firstMove.moves()].map((move) => move.toString())).not.toContain('10001\n');
+});
+
+test('hash - differs when only blocked differs', () => {
+  const board = BitBoard.fromString('00');
+  const unblocked = new BlokusCram(board.clone(), [MONOMINO], null);
+  const blocked = new BlokusCram(board.clone(), [MONOMINO], BitBoard.fromString('01'));
+
+  expect(unblocked.hash()).not.toBe(blocked.hash());
+});
+
+test('hash - two different blocked boards also produce different hashes', () => {
+  const board = BitBoard.fromString('00');
+  const blockedLeft = new BlokusCram(board.clone(), [MONOMINO], BitBoard.fromString('10'));
+  const blockedRight = new BlokusCram(board.clone(), [MONOMINO], BitBoard.fromString('01'));
+
+  expect(blockedLeft.hash()).not.toBe(blockedRight.hash());
+});
+
+test('MoveStore - games sharing board and polyominos but differing in blocked keep distinct move sets', () => {
+  const board = BitBoard.fromString('00');
+  const unblocked = new BlokusCram(board.clone(), [MONOMINO], null);
+  const blocked = new BlokusCram(board.clone(), [MONOMINO], BitBoard.fromString('01'));
+
+  const store = new MoveStore<BlokusCram>();
+
+  const unblockedMoves = store.leftMoves(unblocked).map((move) => move.toString());
+  const blockedMoves = store.leftMoves(blocked).map((move) => move.toString());
+
+  // unblocked can place at either cell; blocked can only place at cell 0.
+  expect(unblockedMoves.sort()).toEqual(['01\n', '10\n'].sort());
+  expect(blockedMoves).toEqual(['10\n']);
 });
